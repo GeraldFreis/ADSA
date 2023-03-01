@@ -83,16 +83,22 @@ int integerAddition(int num1, int num2, int B)
     }
 
 
-
     if(B == 2){return reconverter(total);}
     return total;
 
 }
 
-// int karatsubaMultiplication(int num1, int num2)
-// {
 
-// }
+int schoolMultiplication(int num1, int num2)
+{
+
+}
+
+int karatsubaMultiplication(int num1, int num2)
+{
+    int a_naught, a_one, b_naught, b_one, B_k;
+    
+}
 
 int main()
 {
