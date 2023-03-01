@@ -47,8 +47,40 @@ int integerAddition(int num1, int num2, int B)
 
     int total = 0;
     std::string num_1 = std::to_string(num1), num_2 = std::to_string(num2); 
-    
+
     int *carryvalues = new int[std::max(num_1.size(), num_2.size())];
+
+    bool thisval = true; int i = 0;
+    int len_num1 = num_1.size()-1, len_num2 = num_2.size()-1;
+
+    while(i < num_1.size() && i < num_2.size())
+    {
+        int val1 = num_1.at(len_num1 - i) - '0', val2 = num_2.at(len_num2 - i) - '0';
+        int current_total = val1 + val2;
+
+        if(current_total >= 10){carryvalues[i] = 1; total += current_total % 10 * pow(10,i);}
+        else {total += current_total * pow(10,i); carryvalues[i] = 0;}
+
+        i++;
+    }
+    
+
+    
+    if(i >= num_1.size() && i < num_2.size()){
+        for(int j = i; j < num_2.size(); j++){
+            total += (num_2.at(j)-'0') * pow(10, j);
+            carryvalues[j] = 0;
+        }   
+    } else if(i < num_1.size() && i >= num_2.size()){
+        for(int j = i; j < num_1.size(); j++){
+            total += (num_1.at(len_num1-j)-'0') * pow(10, j);
+            carryvalues[j] = 0;
+        }
+    }
+
+    for(int x = 0; x <= i; x++){
+        total += carryvalues[x] * pow(10,x+1);
+    }
 
 
 
@@ -57,14 +89,17 @@ int integerAddition(int num1, int num2, int B)
 
 }
 
-int karatsubaMultiplication(int num1, int num2)
-{
+// int karatsubaMultiplication(int num1, int num2)
+// {
 
-}
+// }
 
 int main()
 {
-
-
+    std::cout << integerAddition(11,19, 10) << "\n";
+    std::cout << integerAddition(113721, 9842,10) << "\n";
+    std::cout << integerAddition(101,5,10) << "\n";
+    std::cout << integerAddition(10,111,2) << "\n";
+    std::cout << integerAddition(111,10,2) << "\n";
 }
 
