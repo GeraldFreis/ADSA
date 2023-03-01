@@ -3,7 +3,7 @@
 #include <cmath>
 
 extern int* base_converter(int, int);
-
+extern int reconverter(int);
 
 int main()
 {
@@ -13,4 +13,5 @@ int main()
     int *arr = base_converter(n1, n2);
 
     std::cout << arr[0] << " " << arr[1] << "\n"; 
+    std::cout << reconverter(arr[0]) << " " << reconverter(arr[1]) << "\n";
 }
