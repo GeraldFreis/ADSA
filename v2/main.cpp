@@ -17,7 +17,7 @@ int main(){
         kara = converterToBase2(karatsuba(convertednums[0], convertednums[1]));
     }
     else {kara = karatsuba(I1, I2);}
-    std::cout << addition << " " << kara << " " << std::floor(float(float(I1) / float(I2)));
+    std::cout << addition << " " << kara << " " << 0 << '\n';
 }
 
 int karatsuba(int a, int b){
@@ -46,33 +46,75 @@ int karatsuba(int a, int b){
 }
 
 int intAddition(int n1, int n2, int base){
+    int base_1 = 0;
+    if(base == 2) base_1 = 10;
+    else base_1 = 10;
     std::vector<int> carrydigits; carrydigits.push_back(0);
-    std::string binarystr_1 = std::to_string(n1);
-    std::string binarystr_2 = std::to_string(n2);
+    std::string binarystr_1 = std::to_string(n1), largerstr;
+    std::string binarystr_2 = std::to_string(n2), smallerstr;
 
-    std::cout << binarystr_1 << " " << binarystr_2 << "\n";
-    int i = 0, sum=0, str1size=(binarystr_1.size()-1), str2size=(binarystr_2.size()-1);
 
-    while((str1size-i >= 0) && (str2size - i >= 0))
+    // std::cout << binarystr_1 << " " << binarystr_2 << "\n";
+    int i=0,j=0, sum=0, str1size=(binarystr_1.size()-1), str2size=(binarystr_2.size()-1) , last_digit = 1;
+    int larger = 0, smaller = 0; 
+
+    if(str1size > str2size){
+        larger = str1size; largerstr = binarystr_1;
+        smaller = str2size; smallerstr = binarystr_2;
+    } else if(str1size == str2size){
+        larger = str1size; smaller = str1size;
+        largerstr = binarystr_1; smallerstr = binarystr_2;
+    } else {
+        larger = str2size; largerstr = binarystr_2;
+        smaller = str1size; smallerstr = binarystr_1;
+    }
+
+    while(larger - i >= 0)
     {
-        int digit_1 = (binarystr_1.at(str1size-i)-'0'), digit_2 = (binarystr_2.at(str2size-i)-'0'), carry=carrydigits.back();
-        int current_sum = digit_1 + digit_2 + carry; 
-        // std::cout << current_sum << " " << digit_1 << " " << digit_2 << " " << carry << '\n';
-        if(current_sum > base)
-        {
-            sum += (current_sum - base) * std::pow(base, i);
-            carrydigits.push_back(1);
-        } else if(current_sum == base) {
-            carrydigits.push_back(0);
-        } else if (current_sum < base){
-            sum += current_sum * std::pow(base, i);
-            carrydigits.push_back(0);
-        } else {
-            carrydigits.push_back(0);
+        // std::cout << largerstr << " " << smallerstr << "\n";
+        while(smaller - j >= 0){
+            int digit_1 = (largerstr.at(larger - i) - '0'), digit_2 = (smallerstr.at(smaller-j) - '0'), carry=carrydigits.back();
+            int current_sum = digit_1 + digit_2 + carry; 
+            // std::cout << current_sum << " " << digit_1 << " " << digit_2 << " " << carry << '\n';
+            if(current_sum > base)
+            {
+                sum += (current_sum - base) * std::pow(base_1, j); last_digit = current_sum - base;
+                carrydigits.push_back(1);
+            } else if(current_sum == base) {
+                carrydigits.push_back(1); last_digit = 0;
+            } else if (current_sum < base){
+                sum += current_sum * std::pow(base_1, j);
+                carrydigits.push_back(0); last_digit = current_sum;
+            } else {
+                carrydigits.push_back(0);
+                last_digit = 0;
+            }
+
+
+
+            // std::cout << sum << '\n';
+            
+            i++;
+            j++;
         }
-        
+
+        if(larger - i >= 0){ // just ensuring that after termination of the other while loop that we are still in range
+            int digit = (largerstr.at(larger - i)-'0'), carry = carrydigits.back();
+            // std::cout << digit << " " << carry << " " << digit + carry << " " << largerstr <<"\n";
+            if(digit + carry >= base){
+                sum += (digit + carry - base) * std::pow(base_1, i); // digit+carry-base == 0 when digit+carry == base
+                carrydigits.push_back(1); last_digit = digit+carry-base;
+            } else {
+                sum += (digit + carry) * std::pow(base_1, i); last_digit = digit+carry;
+                carrydigits.push_back(0);
+            }
+        // std::cout << sum << '\n';
+        }
+        // std::cout << i << " " << larger-i << "\n";
         i++;
     }
+
+    if(carrydigits.back() == 1 && last_digit == 0){sum += 1 * std::pow(base_1,i);}
 
     return sum;
 }
