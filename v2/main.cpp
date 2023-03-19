@@ -41,52 +41,39 @@ int karatsuba(int a, int b){
 
     p = p_1 * std::pow(10, n) + p_2 * std::pow(10, k) + p_3; 
 
-    std::cout << a << "=" << a_1 << "*10^(" << k << ") +  " << a_0 << ", " << b << "=" << b_1 << "*10^(" << k <<")" << " + " << b_0 << "\n";
+    // std::cout << a << "=" << a_1 << "*10^(" << k << ") +  " << a_0 << ", " << b << "=" << b_1 << "*10^(" << k <<")" << " + " << b_0 << "\n";
     return p;
 }
 
 int intAddition(int n1, int n2, int base){
-    std::vector<int> carrydigits;
+    std::vector<int> carrydigits; carrydigits.push_back(0);
     std::string binarystr_1 = std::to_string(n1);
     std::string binarystr_2 = std::to_string(n2);
 
-    int i = 0, sum=0, str1size=binarystr_1.size()-1, str2size=binarystr_2.size()-1;
-    for(i = 0; i <= str1size && i <= str2size; i++){
-        int currentsum = 0;
-        if(i!=0){currentsum+=carrydigits.at(carrydigits.size()-1);} // adding the previous carry over digit to the current sum
-        currentsum += binarystr_1.at(str1size-i)-'0'+binarystr_2.at(str2size-i)-'0';
+    std::cout << binarystr_1 << " " << binarystr_2 << "\n";
+    int i = 0, sum=0, str1size=(binarystr_1.size()-1), str2size=(binarystr_2.size()-1);
 
-
-        if(currentsum == base){carrydigits.push_back(1);}
-        else if(currentsum > base){carrydigits.push_back(1); sum += 1 * pow(10,i);}
-        else {carrydigits.push_back(0); sum += currentsum * pow(10,i);}
+    while((str1size-i >= 0) && (str2size - i >= 0))
+    {
+        int digit_1 = (binarystr_1.at(str1size-i)-'0'), digit_2 = (binarystr_2.at(str2size-i)-'0'), carry=carrydigits.back();
+        int current_sum = digit_1 + digit_2 + carry; 
+        // std::cout << current_sum << " " << digit_1 << " " << digit_2 << " " << carry << '\n';
+        if(current_sum > base)
+        {
+            sum += (current_sum - base) * std::pow(base, i);
+            carrydigits.push_back(1);
+        } else if(current_sum == base) {
+            carrydigits.push_back(0);
+        } else if (current_sum < base){
+            sum += current_sum * std::pow(base, i);
+            carrydigits.push_back(0);
+        } else {
+            carrydigits.push_back(0);
+        }
+        
+        i++;
     }
-    // if(carrydigits.size() == i){sum += carrydigits.at(carrydigits.size()-1) * pow(10,i);}
 
-    if(str1size > str2size){ // if we did not read all digits of the first number
-        for(i=i; i <= str1size; i++){
-            int currentsum = carrydigits.at(carrydigits.size()-1);
-            currentsum += binarystr_1.at(str1size-i)-'0';
-            if(currentsum == base-1){
-                sum += 1*pow(10,i);
-            } else if(currentsum == base){
-                carrydigits.push_back(1);
-            }
-        }
-    } else if(str1size < str2size){
-        for(i=i; i <= str2size; i++){
-            int currentsum = carrydigits.at(carrydigits.size()-1);
-            currentsum += binarystr_2.at(str2size-i)-'0';
-            if(currentsum == base-1){
-                sum += (binarystr_2.at(str2size-i)-'0') * pow(10,i);
-            } else if(currentsum == base){
-                carrydigits.push_back(1);
-            }
-        }
-    }  /* else {
-        if(carrydigits.size() == i){sum += carrydigits.at(carrydigits.size()-1) * pow(10,i);}
-    } */
-    if(carrydigits.size() == i){sum += carrydigits.at(carrydigits.size()-1) * pow(10,i);}
     return sum;
 }
 
