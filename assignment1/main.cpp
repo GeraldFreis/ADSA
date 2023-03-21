@@ -6,6 +6,7 @@
 // defining the functions that are implemented
 std::string karatsuba(std::string a, std::string b, int base);
 std::string intAddition(std::string n1, std::string n2, int base);
+std::string intSubtraction(std::string a, std::string b);
 
 // main function to run and take all inputs from the files
 int main(){
@@ -14,27 +15,41 @@ int main(){
     std::cin >> I1 >> I2 >> b;
 
     std::cout << intAddition(I1, I2, b) << "\t" << karatsuba(I1, I2, b) << " " << 0 << "\n"; 
-    // std::cout << "510142435045524244505303310520550440450253305012513\n";
+    std::cout << "2420110111420234154241430052433145304554533102512015222\n";
 }
 
 // implementation of the karatsuba multiplcation algorithm
 std::string karatsuba(std::string a, std::string b, int base)
 {
+    // std::cout << "\n\n Made it to first part\n";
     if(a.size() < 3 || b.size() < 3) return std::to_string(std::stoull(a) * std::stoull(b)); // problem here is that we might cop an out of range
     
     std::string p_1, p_2, p_3, p, a_0, b_0, a_1, b_1;
 
     a_1 = a.at(0); for(int i = 0; i < static_cast<int>(a.size()/2); i++){a_1 += a.at(i);}
     b_1 = b.at(0); for(int i = 0; i < static_cast<int>(b.size()/2); i++){b_1 += b.at(i);}
-    a_0 = a.at(int(a.size()/2)); //for(int i = static_cast<int>(a.size()/2); i < static_cast<int>(a.size()); i++){a_0 += a.at(i);}
-    b_0 = a.at(int(a.size()/2)); // for(int i = static_cast<int>(a.size()/2); i < static_cast<int>(a.size()); i++){b_0 += a.at(i);}
+    a_0 = a.at(int(a.size()/2)); for(int i = static_cast<int>(a.size()/2 + 1); i < static_cast<int>(a.size()); i++){a_0 += a.at(i);}
+    b_0 = a.at(int(a.size()/2));  for(int i = static_cast<int>(a.size()/2 + 1); i < static_cast<int>(a.size()); i++){b_0 += a.at(i);}
+    // std::cout << "Made it to second part\n";
+
     // std::cout << "Made it this far" << "\n";
-    p_1 = karatsuba(a_1, b_1, base); for(int i = 0; i < static_cast<int>(a.size()); i++){p_1 += "0";}
+    p_1 = karatsuba(a_1, b_1, base); 
     p_3 = karatsuba(a_0, b_0, base);
+    std::cout << "p_1 = " << p_1 << " p_3 = " << p_3 << "\n";
 
     p_2 = karatsuba((intAddition(a_1, a_0, base)), intAddition(b_1, b_0, base), base);
-    for(int i = 0; i < static_cast<int>(a.size()/2); i++){p_2 += "0";}
-    p = intAddition(intAddition(p_1, p_2, base), p_3, base);
+    // std::cout << p_2 << "-";
+    std::cout << "p_2 = " << p_2 << " - " << p_1 << " - " << p_3 <<'\n';
+
+    p_2 = intSubtraction(p_2, p_1); 
+    // std::cout << p_1 << "=" << p_2 << "\n";
+    p_2 = intSubtraction(p_2, p_3);
+    std::cout <<"p_2 = " << p_2 <<"\n";
+
+    for(int i = 0; i < static_cast<int>(a.size()); i++){p_1 += "0";}
+    for(int i = 0; i < static_cast<int>(a.size()/2-1); i++){p_2 += "0";}
+
+    p = intAddition(p_1, p_2, base); p = intAddition(p, p_3, base);
 
     return p;
 }
@@ -144,4 +159,76 @@ std::string intAddition(std::string n1, std::string n2, int base)
     }
     return newsum;
     
+}
+
+std::string intSubtraction(std::string a, std::string b){
+    if(a.size() < 2 || b.size() < 2){return std::to_string(std::stoull(a)-std::stoul(b));}
+    // definitions
+    std::string larger, smaller, output="";
+    int largern, smallern, i=0, j=0, carrydigit=0;
+    //  std::cout << "Made it to subtractions\n";
+    // setting required variables
+    if(a.size() > b.size()) {larger = a; smaller = b; smallern = b.size()-1; largern = a.size()-1;}
+    else if(a.size() == b.size()) {
+        int allthesame = 0;
+        for(int x = 0; x < static_cast<int>(a.size()); x++){
+            if(a.at(x) > b.at(x)){
+                larger = a; smaller = b;
+                smallern = b.size()-1; largern = a.size()-1;
+                break;
+            } else if(a.at(x) < b.at(x)){
+                smaller = a; larger = b;
+                smallern = a.size()-1; largern = b.size()-1;
+                break;
+            } else if(a.at(x) == b.at(x)){
+                allthesame++;
+            }
+        }
+        if(allthesame == a.size()){
+            return "0";
+        }
+    }
+    else {larger = b; smaller = a; smallern = a.size()-1; largern = b.size()-1;} 
+    
+    // std::cout << "made it through the swapping of the strings\n";
+    // reversing the strings:
+    // std::cout << a << " " << b <<'\n';
+
+    std::string reversed_larger="", reversed_smaller="";
+    for(i = 0; i < static_cast<int>(largern+1); i++){reversed_larger += larger.at(largern-i);}
+    
+    for(i = 0; i < static_cast<int>(smallern+1); i++){reversed_smaller += smaller.at(smallern-i);}
+
+    // std::cout << "Made it to the while loop\n";
+    // std::cout << reversed_larger << " " << reversed_smaller <<'\n';
+    i=0;
+    while(smallern>i){
+        // getting each digit
+        int digit_smaller = reversed_smaller.at(i)-'0', digit_larger = reversed_larger.at(i)-'0';
+        int val = digit_larger-digit_smaller-carrydigit;
+        // std::cout << val << " " << digit_larger << " " << digit_smaller << " " << carrydigit << '\n';
+        if(val < 0){carrydigit=1;
+        output += val + 10 + '0';
+        }
+        else {output += val + '0'; carrydigit=0;} 
+        i++;
+        // std::cout << smallern - i << "\n";
+        // std::cout << output << "\n";
+    }
+
+    // std::cout << "made it through the while loop\n";
+    for(int x = i; x <= static_cast<int>(largern); x++){
+        int val = (reversed_larger.at(x)-'0') - carrydigit;
+        // std::cout << val << "\n";
+        if(val < 0){output += val + 10 + '0'; carrydigit=1;}
+        else {output += val+'0'; carrydigit=0;} 
+    }
+
+    // reversing the final string (output)
+    std::string newout="";
+    for(int n = 0; n < static_cast<int>(output.size()); n++){
+        newout += output.at(output.size()-1-n);
+    }
+    // std::cout << "made it to return\n\n";
+    return newout;
 }
