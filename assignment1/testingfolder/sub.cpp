@@ -21,8 +21,8 @@ std::string intSubtraction(std::string a, std::string b){
             }
         }
     }
-    else {larger = b; smaller = a; smallern = a.size(); largern = b.size();} 
-
+    else {larger = b; smaller = a; smallern = a.size()-1; largern = b.size()-1;} 
+    std::cout << largern << " " << smallern << '\n';
     // reversing the strings:
     std::string reversed_larger="", reversed_smaller="";
     for(i = 0; i < static_cast<int>(largern); i++){reversed_larger += larger.at(largern-i);}

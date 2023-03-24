@@ -8,6 +8,7 @@ int main(){
     std::string I1, I2, b, kara, addition;
     std::cin >> I1 >> I2 >> b;
     std::cout <<  intSubtraction(I1, I2) << '\n';
+    std::cout << "2301151963498394042303187309931960302917962033553954592079351\n";
 }
 
 std::string intSubtraction(std::string a, std::string b){
@@ -42,6 +43,7 @@ std::string intSubtraction(std::string a, std::string b){
     std::cout << "made it through the swapping of the strings\n";
     // reversing the strings:
     std::cout << a << " " << b <<'\n';
+    std::cout << largern << " " << smallern << '\n';
 
     std::string reversed_larger="", reversed_smaller="";
     for(i = 0; i < static_cast<int>(largern+1); i++){reversed_larger += larger.at(largern-i);}
@@ -51,11 +53,11 @@ std::string intSubtraction(std::string a, std::string b){
     std::cout << "Made it to the while loop\n";
     std::cout << reversed_larger << " " << reversed_smaller <<'\n';
     i=0;
-    while(smallern>i){
+    while(smallern>=i){
         // getting each digit
         int digit_smaller = reversed_smaller.at(i)-'0', digit_larger = reversed_larger.at(i)-'0';
         int val = digit_larger-digit_smaller-carrydigit;
-        // std::cout << val << " " << digit_larger << " " << digit_smaller << " " << carrydigit << '\n';
+        std::cout << val << "=" << digit_larger << "-" << digit_smaller << "-" << carrydigit << '\n';
         if(val < 0){carrydigit=1;
         output += val + 10 + '0';
         }
