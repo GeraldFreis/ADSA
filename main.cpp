@@ -75,9 +75,10 @@ void insert(int *array, int len, int value){
             if(value > array[i]){
                 i = i*2+1;
             }
-            else {
+            else if(value < array[i]) { // no duplicates
                 i = i*2;
             }
+            else { return; } // returning if value == array[i]
         } else {
             array[i] = value;
             break;
@@ -89,7 +90,7 @@ bool isBalanced(int *array, int len, int current_index)
 {
     int i = current_index;
     int leftlen = 0, rightlen = 0;
-    
+
     while(2*i < len)
     {
         if(array[2*i] != 0) leftlen++;
@@ -109,5 +110,5 @@ bool isBalanced(int *array, int len, int current_index)
 }
 
 void restructure(int *array, int len){
-
+    
 }
