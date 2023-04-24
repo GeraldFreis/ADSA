@@ -112,36 +112,7 @@ void dels(Node *root, int value)
             root = root->rightptr;
         } else { // if we have both children
             // make the current value the right hand value
-            
         }
 
     }
-}
-
-void preTids(Node *this_node) // pre order
-{
-    if(this_node == NULL){return;} // base case
-    if(this_node->leftptr != NULL){ // going over left side
-        preTids(this_node->leftptr);
-    }
-    std::cout << this_node->val << " ";
-    if(this_node->rightptr != NULL){
-        preTids(this_node->rightptr);
-    }
-} 
-void postTids(Node *this_node) // prints stuff in postorder
-{
-    if(this_node == NULL){return;} // base case
-
-    if(this_node->rightptr != NULL){postTids(this_node->rightptr);}
-    std::cout << this_node->val << " ";
-    if(this_node->leftptr != NULL){postTids(this_node->leftptr);}
-
-}
-void inTids(Node *this_node) // prints stuf in order
-{
-    if(this_node == NULL){return;} // base case
-    std::cout << this_node->val << " ";
-    if(this_node->leftptr != NULL){inTids(this_node->leftptr);}
-    if(this_node->rightptr != NULL){inTids(this_node->rightptr);}
 }
