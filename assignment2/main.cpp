@@ -56,28 +56,54 @@ void execute(std::vector<std::string> commandies)
     // i want to iterate through all little commandies except the last one (but maybe the last one)
     // We compile with g++11 which means I can use auto
     Node *headmaster = NULL;
-    for(auto commands: commandies)
+    for(auto command: commandies)
     {
         // we can use if statements (I like them more than switches)
-        if(commands.at(0) == 'A') // if we need to add to the thingy
+        if(command.at(0) == 'A') // if we need to add to the thingy
         {
-            ins(headmaster, std::stoi(commands.substr(1, commands.size())));
+            ins(headmaster, std::stoi(command.substr(1, command.size())));
             balance(headmaster);
-        } else if(commands.at(0) == 'D') // if we need to delete to the thingy        
+        } else if(command.at(0) == 'D') // if we need to delete to the thingy        
         {
-            dels(headmaster, std::stoi(commands.substr(1, commands.size())));
+            dels(headmaster, std::stoi(command.substr(1, command.size())));
             balance(headmaster);
-        } else if(commands == "IN") // printing in order
+        } else if(command == "IN") // printing in order
         {
-
-        } else if(commands == "PRE") // printing in pre order
+            inTids(headmaster);
+        } else if(command == "PRE") // printing in pre order
         {
-
-        } else if(commands == "POST") // printing in post order
+            preTids(headmaster);
+        } else if(command == "POST") // printing in post order
         {
-
-        }
+            postTids(headmaster);
+        }   
     }
+}
+
+/*
+Calculating the balance for each ball balanced on your jugular
+(left scrote - right scrote)
+*/
+int calc_balance(Node *root)
+{
+    // finding the length of all nodes on the left 
+    Node *temp = root;
+    int left_counter=0, right_counter=0; 
+
+    while(true)
+    {
+        if(temp->leftptr == NULL) break;
+        else {left_counter++; temp=temp->leftptr;}
+    }
+
+    temp = root;
+    while(true)
+    {
+        if(temp->rightptr == NULL) break;
+        else {right_counter++; temp=temp->rightptr;}
+    }
+
+    return left_counter - right_counter;
 }
 
 /*
@@ -85,7 +111,13 @@ Balance these balls on your jugular
 */
 void balance(Node *root)
 {
-
+    // we need to calculate the balance of each node and their children
+    if(root->leftptr == NULL && root->rightptr == NULL) // no kids
+    {}
+    else if(root->leftptr == NULL && root->rightptr != NULL) // right kid only
+    {}
+    else if(root->leftptr != NULL && root->rightptr == NULL) // left kid only
+    {}
 }
 // I plop the val into an empty Node in the right place
 void ins(Node *root, int value)
