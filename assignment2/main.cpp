@@ -96,7 +96,9 @@ void ins(Node *root, int value)
         ins(root->leftptr, value);
     } else if(root->val == value){return;}
 }
-
+/*
+Takes in a value to delete in the tree and the root node and removes that value from the tree
+*/
 void dels(Node *root, int value)
 {
     // base case
@@ -111,8 +113,20 @@ void dels(Node *root, int value)
         {
             root = root->rightptr;
         } else { // if we have both children
-            // make the current value the right hand value
-            
+            // make the current value the right most value
+            Node *temp_node = root;
+            while(true){
+                if(temp_node->rightptr == NULL && temp_node->leftptr == NULL){
+                    root->val = temp_node->val;
+                    // now we can recursively delete that node that we just moved
+                    dels(root->rightptr, temp_node->val);
+                
+                    break;
+                } else {
+                    temp_node = temp_node->rightptr; // chugging along the chain
+                }
+            }
+
         }
 
     }
