@@ -79,6 +79,14 @@ void execute(std::vector<std::string> commandies)
         }
     }
 }
+
+/*
+Balance these balls on your jugular
+*/
+void balance(Node *root)
+{
+
+}
 // I plop the val into an empty Node in the right place
 void ins(Node *root, int value)
 {
@@ -120,7 +128,6 @@ void dels(Node *root, int value)
                     root->val = temp_node->val;
                     // now we can recursively delete that node that we just moved
                     dels(root->rightptr, temp_node->val);
-                
                     break;
                 } else {
                     temp_node = temp_node->rightptr; // chugging along the chain
@@ -128,7 +135,6 @@ void dels(Node *root, int value)
             }
 
         }
-
     }
 }
 
