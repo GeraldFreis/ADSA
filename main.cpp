@@ -43,8 +43,6 @@ std::vector<std::string> parser(std::string str)
 // function to take the commands and execute them 
 void executer(std::vector<std::string> given_commands)
 {
-    for(auto a: given_commands) std::cout << a << " ";
-    std::cout << "\n";
     int maxsize = std::pow(2, given_commands.size());
     int *array = new int[maxsize]; // an array to represent the tree (in order)
     for(int i = 0; i < given_commands.size(); i++){ array[i] = 0; }
@@ -74,7 +72,7 @@ void executer(std::vector<std::string> given_commands)
     // std::cout << "\n";
     // restructure(array, maxsize);
     std::cout << "After: ";
-    for(int i = 0; i < maxsize; i++){std::cout << array[i] << " ";}
+    for(int i = 0; i < maxsize; i++){if(array[i]!=0)std::cout << array[i] << " ";}
     std::cout << "\n";
     delete [] array;
 }
@@ -157,7 +155,8 @@ void leftRotation(int *array, int unbalanced_index)
 
         int index = unbalanced_index;
         int temp = array[index*2+1];
-
+        array[index*2+1] = array[index];
+        // for(int i = 0; i < )
         // moving the nodes on the right of the child down
         while(array[index*2+1] != 0)
         {
@@ -167,7 +166,6 @@ void leftRotation(int *array, int unbalanced_index)
             temp = current;
             index = index * 2 + 1;
         }
-
         array[index*2+1] = temp;
         
         index = unbalanced_index;
@@ -205,6 +203,7 @@ int isBalanced(int *array, int len, int current_index)
         if(i == 0){i=1;}
         else {i = i * 2 + 1;}
     }
+
     // std::cout << leftlen << " " << rightlen << "\n";
     // if(std::abs(leftlen - rightlen) >= 2){return false;}
     return leftlen-rightlen;
@@ -221,14 +220,9 @@ void restructure(int *array, int len){
             }
             else if(unb <= -1)
             {
-                // std::cout << "here" << "\n";
-                std::cout << "Before left rotation: ";
-                for(int j  = i; j < len; j++){if(array[j] != 0) std::cout << array[j] << " ";}
-                std::cout << std::endl;
+                
                 leftRotation(array, i);
-                std::cout << "After left rotation: ";
-                for(int j  = i; j < len; j++){if(array[j] != 0) std::cout << array[j] << " ";}
-                std::cout << std::endl;
+        
                 restructure(array, len);
 
             }
