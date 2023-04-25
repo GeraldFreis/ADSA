@@ -106,18 +106,38 @@ int calc_balance(Node *root)
     return left_counter - right_counter;
 }
 
+void left_rot(Node *root)
+{
+    // we get the right node and rotate it and reset the root->right
+    Node *right_node = root->rightptr;
+    Node *left_temp = root->rightptr->leftptr;
+    root->rightptr = left_temp;
+    right_node->leftptr = root;
+    root = right_node;
+}
+
+void right_rot(Node *root)
+{
+    Node *left_node = root->leftptr;
+    Node *right_temp = root->leftptr->rightptr;
+    root->leftptr = right_temp;
+    left_node->leftptr = root;
+    root=left_node;
+}
+
 /*
 Balance these balls on your jugular
 */
 void balance(Node *root)
 {
     // we need to calculate the balance of each node and their children
-    if(root->leftptr == NULL && root->rightptr == NULL) // no kids
-    {}
-    else if(root->leftptr == NULL && root->rightptr != NULL) // right kid only
-    {}
-    else if(root->leftptr != NULL && root->rightptr == NULL) // left kid only
-    {}
+    if(root == NULL){return;}
+
+    Node *temp = root;
+    while(temp->leftptr != NULL){
+        int bal = calc_balance(temp->leftptr);
+
+    }
 }
 // I plop the val into an empty Node in the right place
 void ins(Node *root, int value)
