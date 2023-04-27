@@ -96,11 +96,28 @@ Node *dels(Node *parent, int val) // deleting nodes
 
 Node *leftRot(Node *parent) // left rotating
 {
+    // making the parent the left node of its right child
+    // making the right child the main parent
+    // making the left node of the right child the right child of the parent
+    Node *right = parent->right_child;
+    Node *leftofright = parent->right_child->left_child;
+    right->left_child = parent;
+    parent->right_child = leftofright;
 
+    return right;
 }
 
 Node *rightRot(Node *parent) // right rotating
 {
+    // making the parent the right node of its left child
+    // making the left child the main parent
+    // making the right node of the left child the left child of the parent
+    Node *left = parent->left_child;
+    Node *rightofleft = parent->left_child->right_child;
+    left->right_child = parent;
+    parent->left_child = rightofleft;
+
+    return left;
 
 }
 
