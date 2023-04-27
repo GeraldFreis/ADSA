@@ -4,9 +4,9 @@
 
 
 struct Node{
-    Node *leftptr;
-    Node *rightptr;
-    int val;
+    Node *leftptr = NULL;
+    Node *rightptr = NULL;
+    int val=0;
 };
 
 // this chromie homie brings joy to my little life
@@ -55,7 +55,7 @@ void execute(std::vector<std::string> commandies)
 {
     // i want to iterate through all little commandies except the last one (but maybe the last one)
     // We compile with g++11 which means I can use auto
-    Node *headmaster = NULL;
+    Node *headmaster = new Node;
     for(auto command: commandies)
     {
         // we can use if statements (I like them more than switches)
@@ -136,21 +136,50 @@ void balance(Node *root)
     Node *temp = root;
     while(temp->leftptr != NULL){
         int bal = calc_balance(temp->leftptr);
+        if(bal < -1 && (temp->leftptr->val > temp->leftptr->rightptr->val)){
+            left_rot(temp->leftptr);
+        } else if (bal < -1 && (temp->leftptr->val < temp->leftptr->rightptr->val)){
+            left_rot(temp->leftptr);
+            right_rot(temp->leftptr);
+        } else if(bal > 1 && (temp->leftptr->val > temp->leftptr->rightptr->val)){
+            right_rot(temp->leftptr);
+        } else if(bal > 1 && (temp->leftptr->val < temp->leftptr->rightptr->val)){
+            right_rot(temp->leftptr);
+            left_rot(temp->leftptr);
+        }
+        temp=temp->leftptr;
+    }
+    temp=root;
+    while(temp->rightptr != NULL){
+        int bal = calc_balance(temp->rightptr);
+        if(bal < -1 && (temp->rightptr->val > temp->rightptr->rightptr->val)){
+            left_rot(temp->rightptr);
+        } else if (bal < -1 && (temp->rightptr->val < temp->rightptr->rightptr->val)){
+            left_rot(temp->rightptr);
+            right_rot(temp->rightptr);
+        } else if(bal > 1 && (temp->rightptr->val > temp->rightptr->rightptr->val)){
+            right_rot(temp->rightptr);
+        } else if(bal > 1 && (temp->rightptr->val < temp->rightptr->rightptr->val)){
+            right_rot(temp->rightptr);
+            left_rot(temp->rightptr);
+        }
 
+        temp = temp->rightptr;
     }
 }
 // I plop the val into an empty Node in the right place
 void ins(Node *root, int value)
 {
-    if(root == NULL)
+    if(root->leftptr == NULL && root->rightptr == NULL && root->val == 0) // empty 
     {
-        Node *thisbugger = new Node;
-        thisbugger->val = value;
-        thisbugger->leftptr = NULL;
-        thisbugger->rightptr = NULL;
+        root->val = value;
+        root->leftptr = new Node;
+        root->rightptr = new Node;
+
     } else if(root->val < value && root->val != value) // if the current value is > the nodes val
     {
         ins(root->rightptr, value); // recursively inserting my nuts in your mouth
+
     } else if(root->val > value && root->val != value)
     {
         ins(root->leftptr, value);
@@ -192,28 +221,30 @@ void dels(Node *root, int value)
 
 void preTids(Node *this_node) // pre order
 {
-    if(this_node == NULL){return;} // base case
+    if(this_node == NULL || this_node->val == 0){return;} // base case 
+    std::cout << this_node->val << " ";
+
     if(this_node->leftptr != NULL){ // going over left side
         preTids(this_node->leftptr);
     }
-    std::cout << this_node->val << " ";
     if(this_node->rightptr != NULL){
         preTids(this_node->rightptr);
     }
 } 
 void postTids(Node *this_node) // prints stuff in postorder
 {
-    if(this_node == NULL){return;} // base case
+    if(this_node == NULL || this_node->val == 0){return;} // base case
 
+    if(this_node->leftptr != NULL){postTids(this_node->leftptr);}
+    
     if(this_node->rightptr != NULL){postTids(this_node->rightptr);}
     std::cout << this_node->val << " ";
-    if(this_node->leftptr != NULL){postTids(this_node->leftptr);}
-
 }
 void inTids(Node *this_node) // prints stuf in order
 {
-    if(this_node == NULL){return;} // base case
-    std::cout << this_node->val << " ";
+    if(this_node == NULL || this_node->val == 0){return;} // base case
+    // std::cout << this_node->val << " ";
     if(this_node->leftptr != NULL){inTids(this_node->leftptr);}
+    std::cout << this_node->val << " ";
     if(this_node->rightptr != NULL){inTids(this_node->rightptr);}
 }
