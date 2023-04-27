@@ -152,10 +152,10 @@ Node *ins(Node *parent, int value) // inserting nodes
 }
 
 Node *deleteBalance(Node *parent, int value){
+    std::cout << "w\n";
     int leftbal = calcBalance(parent->left_child)+1;
     int rightbal = calcBalance(parent->right_child)+1;
     int bal = leftbal - rightbal;
-    std::cout << "w\n";
 
     if(bal < -1){
         int rightleft=calcBalance(parent->right_child->left_child), rightright=calcBalance(parent->right_child->right_child);
