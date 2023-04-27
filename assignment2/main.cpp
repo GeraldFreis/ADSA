@@ -1,23 +1,30 @@
 #include <iostream>
-#include <string>
-#include <vector>
+#include <vector> // for vector
+#include <string> // for getline functions and string operations
 
-
-struct Node{
-    Node *leftptr = NULL;
-    Node *rightptr = NULL;
-    int val=0;
+/*
+The Node structure with a link to the parent is how we are going to implement the tree
+*/
+struct Node
+{
+    Node *left_child;
+    Node *right_child;
+    int val; // by default -2
 };
 
-// this chromie homie brings joy to my little life
-std::vector<std::string> parser(std::string);
-void execute(std::vector<std::string>); // this hombre takes in the commandies and commands
-void preTids(Node *); // prints stuff in preorder
-void postTids(Node *); // prints stuff in postorder
-void inTids(Node *); // prints stuf in order
-void ins(Node *, int); // inserts a new node
-void dels(Node *, int); // deletes a node if it exists (if not fuck you commie scum)
-void balance(Node *);
+
+
+Node *ins(Node *parent, int val); // inserting nodes
+Node *insertBalance(Node *parent, int value);
+Node *deleteBalance(Node *parent, int value);
+Node *dels(Node *parent, int val); // deleting nodes
+Node *leftRot(Node *parent); // left rotating
+Node *rightRot(Node *parent); // right rotating
+void in(Node *parent); // printing inorder
+void pre(Node *parent); // printing preorder
+void post(Node *parent); // printing postorder
+void execute(std::vector<std::string> commandiess); // executing everything
+std::vector<std::string> parser(std::string given_string); // parsing the commands
 
 int main() 
 {
@@ -55,196 +62,221 @@ void execute(std::vector<std::string> commandies)
 {
     // i want to iterate through all little commandies except the last one (but maybe the last one)
     // We compile with g++11 which means I can use auto
-    Node *headmaster = new Node;
+    Node *headmaster = NULL;
     for(auto command: commandies)
     {
         // we can use if statements (I like them more than switches)
         if(command.at(0) == 'A') // if we need to add to the thingy
         {
-            ins(headmaster, std::stoi(command.substr(1, command.size())));
-            balance(headmaster);
+            headmaster = ins(headmaster, std::stoi(command.substr(1, command.size())));
         } else if(command.at(0) == 'D') // if we need to delete to the thingy        
         {
-            dels(headmaster, std::stoi(command.substr(1, command.size())));
-            balance(headmaster);
+            in(headmaster);
+            std::cout << "\n";
+            headmaster = dels(headmaster, std::stoi(command.substr(1, command.size())));
+            // std::cout << "working: " << std::stoi(command.substr(1, command.size())) << "\n";
+            std::cout << "After: " << std::stoi(command.substr(1, command.size())) << "\n";
+            in(headmaster);
+            std::cout << "\n\n";
+
+            
         } else if(command == "IN") // printing in order
         {
-            inTids(headmaster);
+            in(headmaster);
         } else if(command == "PRE") // printing in pre order
         {
-            preTids(headmaster);
+            pre(headmaster);
         } else if(command == "POST") // printing in post order
         {
-            postTids(headmaster);
+            post(headmaster);
         }   
     }
 }
+// here I calculate le balance
+int calcBalance(Node *node){
+    if(node == NULL){return 0;}
+    else if(node->left_child == NULL && node->right_child == NULL){return 1;}
+    // finding the heights of the left and right nodes and returning the maximum
+    int leftbal = calcBalance(node->left_child);
+    int rightbal = calcBalance(node->right_child);
 
-/*
-Calculating the balance for each ball balanced on your jugular
-(left scrote - right scrote)
-*/
-int calc_balance(Node *root)
-{
-    // finding the length of all nodes on the left 
-    Node *temp = root;
-    int left_counter=0, right_counter=0; 
-
-    while(true)
-    {
-        if(temp->leftptr == NULL) break;
-        else {left_counter++; temp=temp->leftptr;}
-    }
-
-    temp = root;
-    while(true)
-    {
-        if(temp->rightptr == NULL) break;
-        else {right_counter++; temp=temp->rightptr;}
-    }
-
-    return left_counter - right_counter;
+    return 1 + std::max(leftbal, rightbal);
 }
 
-void left_rot(Node *root)
-{
-    // we get the right node and rotate it and reset the root->right
-    Node *right_node = root->rightptr;
-    Node *left_temp = root->rightptr->leftptr;
-    root->rightptr = left_temp;
-    right_node->leftptr = root;
-    root = right_node;
-}
+// balancing with deletes and insert is slightly different so I have different functions because my girlfriend broke up with me on april the 24th of this year and its now april the 27th and our four year anniversary is in two weeks and I have already bought fairly expensive gifts and now I have to return them and I am pretty sad Im not going to lie. I am really struggling right now and I feel like I am drowning. I have so much uni work but I cant really focus. This is my third iteration of code. I have written two previous versions that both worked in my own tests but I think this version might be the winner. To be honest I am not sure if it will be but lets hope. I have spent an awful amount of time on this assignment and my first and second version used int arrays rather than node structures which made rebalancing easy but I think I would lose marks if I used them which is why i have rewritten my code now and its a big effort for me and I am not sure how I am going to cope. Its been two days now and I feel horrendous. Alongside the worst I have ever felt. It was just a punch in the guts because we went to tasmania a week prior for a week and it was really enjoyable. I was really happy. I struggle to be happy but for the past while I have been really happy. But now im sad again. 
+Node *insertBalance(Node *parent, int value){
+    // first we have to calculate the balance 
+    // for that we use a cheeky function
+    int leftbal = calcBalance(parent->left_child)+1;
+    int rightbal = calcBalance(parent->right_child)+1;
+    int bal = leftbal - rightbal;
 
-void right_rot(Node *root)
-{
-    Node *left_node = root->leftptr;
-    Node *right_temp = root->leftptr->rightptr;
-    root->leftptr = right_temp;
-    left_node->leftptr = root;
-    root=left_node;
-}
-
-/*
-Balance these balls on your jugular
-*/
-void balance(Node *root)
-{
-    // we need to calculate the balance of each node and their children
-    if(root == NULL){return;}
-
-    Node *temp = root;
-    while(temp->leftptr != NULL){
-        int bal = calc_balance(temp->leftptr);
-        if(bal < -1 && (temp->leftptr->val > temp->leftptr->rightptr->val)){
-            left_rot(temp->leftptr);
-        } else if (bal < -1 && (temp->leftptr->val < temp->leftptr->rightptr->val)){
-            left_rot(temp->leftptr);
-            right_rot(temp->leftptr);
-        } else if(bal > 1 && (temp->leftptr->val > temp->leftptr->rightptr->val)){
-            right_rot(temp->leftptr);
-        } else if(bal > 1 && (temp->leftptr->val < temp->leftptr->rightptr->val)){
-            right_rot(temp->leftptr);
-            left_rot(temp->leftptr);
+    if(bal < -1){
+        if(value < parent->right_child->val){ // doing a r-l rotation
+            parent->right_child = rightRot(parent->right_child);
+            return leftRot(parent);
+        } 
+        if(parent->right_child->val < value){
+            return leftRot(parent);
         }
-        temp=temp->leftptr;
-    }
-    temp=root;
-    while(temp->rightptr != NULL){
-        int bal = calc_balance(temp->rightptr);
-        if(bal < -1 && (temp->rightptr->val > temp->rightptr->rightptr->val)){
-            left_rot(temp->rightptr);
-        } else if (bal < -1 && (temp->rightptr->val < temp->rightptr->rightptr->val)){
-            left_rot(temp->rightptr);
-            right_rot(temp->rightptr);
-        } else if(bal > 1 && (temp->rightptr->val > temp->rightptr->rightptr->val)){
-            right_rot(temp->rightptr);
-        } else if(bal > 1 && (temp->rightptr->val < temp->rightptr->rightptr->val)){
-            right_rot(temp->rightptr);
-            left_rot(temp->rightptr);
+    } else if(bal > 1){
+        if(parent->left_child->val < value){
+            parent->left_child = leftRot(parent->left_child);
+            return rightRot(parent);
+        } else {
+            return rightRot(parent);
         }
-
-        temp = temp->rightptr;
     }
+    // if it was all balanced we just return the parent
+    return parent;
 }
-// I plop the val into an empty Node in the right place
-void ins(Node *root, int value)
+
+
+Node *ins(Node *parent, int value) // inserting nodes
 {
-    if(root->leftptr == NULL && root->rightptr == NULL && root->val == 0) // empty 
+    if(parent == NULL)
     {
-        root->val = value;
-        root->leftptr = new Node;
-        root->rightptr = new Node;
+        Node *new_node = new Node;
+        new_node->val = value;
+        return new_node;
+    } else {
+        if(value > parent->val){
+            parent->right_child = ins(parent->right_child, value);
+        } else if(value < parent->val){
+            parent->left_child = ins(parent->left_child, value);
+        } else if(value == parent->val) return parent;
+    }
 
-    } else if(root->val < value && root->val != value) // if the current value is > the nodes val
-    {
-        ins(root->rightptr, value); // recursively inserting my nuts in your mouth
-
-    } else if(root->val > value && root->val != value)
-    {
-        ins(root->leftptr, value);
-    } else if(root->val == value){return;}
+    // now we have to restructure the tree
+    return insertBalance(parent, value);
 }
-/*
-Takes in a value to delete in the tree and the root node and removes that value from the tree
-*/
-void dels(Node *root, int value)
+
+Node *deleteBalance(Node *parent, int value){
+    int leftbal = calcBalance(parent->left_child)+1;
+    int rightbal = calcBalance(parent->right_child)+1;
+    int bal = leftbal - rightbal;
+    std::cout << "w\n";
+
+    if(bal < -1){
+        int rightleft=calcBalance(parent->right_child->left_child), rightright=calcBalance(parent->right_child->right_child);
+        int bal = rightleft - rightright;
+        if(bal > 0){
+            parent->right_child = rightRot(parent->right_child);
+            return leftRot(parent);
+        } 
+        if(bal <= 0){
+            return leftRot(parent);
+        }
+    } 
+    if(bal > 1){
+        int leftleft=calcBalance(parent->left_child->left_child), leftright=calcBalance(parent->left_child->right_child);
+        int bal = leftleft - leftright;
+        if(bal > 0){
+            parent->left_child = leftRot(parent->left_child);
+            return rightRot(parent);
+        } 
+        if(bal <=0){
+            return rightRot(parent);
+        }
+    }
+
+    // if all is balanced
+    return parent;
+}
+
+Node *dels(Node *parent, int val) // deleting nodes
 {
     // base case
-    if(root == NULL) return; 
-    if(root->val == value) // deleting is not fun
+    if(parent == NULL) return parent;
+    // using the same kind of thing that we did for insertion that only difference is if we are in the value or not
+    if(val == parent->val)
     {
-        // if we have a left child but no right child
-        if(root->leftptr != NULL && root->rightptr == NULL)
+        if(parent->left_child != NULL && parent->right_child != NULL)
         {
-            root = root->leftptr; 
-        } else if(root->rightptr != NULL && root->leftptr == NULL) // if we have a right child but no left
-        {
-            root = root->rightptr;
-        } else { // if we have both children
-            // make the current value the right most value
-            Node *temp_node = root;
-            while(true){
-                if(temp_node->rightptr == NULL && temp_node->leftptr == NULL){
-                    root->val = temp_node->val;
-                    // now we can recursively delete that node that we just moved
-                    dels(root->rightptr, temp_node->val);
-                    break;
-                } else {
-                    temp_node = temp_node->rightptr; // chugging along the chain
-                }
+            // using a temporary val to store the maximum value on the left side
+            Node *maxleft = parent->left_child;
+            while(maxleft->right_child != NULL){
+                maxleft = maxleft->right_child;
             }
 
+            parent->val = maxleft->val; // changing the parents value to the max value on the left 
+            // changing the parents left child around because we now have a duplicate so we need to delete some stuff
+            
+            parent->left_child = dels(parent->left_child, maxleft->val);         
+            // std::cout << "w\n";
+
+        } else if(parent->left_child == NULL && parent->right_child != NULL){
+            parent=parent->right_child;
+        } else if(parent->left_child != NULL && parent->right_child == NULL){
+            parent=parent->left_child;
+        } else {
+            parent = NULL;
         }
+    } else if(parent->val > val){
+        parent->left_child = dels(parent->left_child, val);
+    } else if(parent->val < val){
+        parent->right_child = dels(parent->right_child, val);
+    }
+
+    // balancing now that we've finished the deleting
+    return deleteBalance(parent, val);
+}
+
+Node *leftRot(Node *parent) // left rotating
+{
+    // making the parent the left node of its right child
+    // making the right child the main parent
+    // making the left node of the right child the right child of the parent
+    Node *right = parent->right_child;
+    Node *leftofright = parent->right_child->left_child;
+    right->left_child = parent;
+    parent->right_child = leftofright;
+
+    return right;
+}
+
+Node *rightRot(Node *parent) // right rotating
+{
+    // making the parent the right node of its left child
+    // making the left child the main parent
+    // making the right node of the left child the left child of the parent
+    Node *left = parent->left_child;
+    Node *rightofleft = parent->left_child->right_child;
+    left->right_child = parent;
+    parent->left_child = rightofleft;
+
+    return left;
+}
+
+void in(Node *parent) // printing inorder
+{
+    if(parent == NULL) return;
+    else if(parent != NULL){
+        in(parent->left_child);
+        std::cout << parent->val << " ";
+        in(parent->right_child);
     }
 }
 
-void preTids(Node *this_node) // pre order
+void pre(Node *parent) // printing preorder
 {
-    if(this_node == NULL || this_node->val == 0){return;} // base case 
-    std::cout << this_node->val << " ";
-
-    if(this_node->leftptr != NULL){ // going over left side
-        preTids(this_node->leftptr);
+    if(parent == NULL) return;
+    else if(parent != NULL){   
+        std::cout << parent->val << " ";
+        pre(parent->left_child);
+        pre(parent->right_child);
     }
-    if(this_node->rightptr != NULL){
-        preTids(this_node->rightptr);
-    }
-} 
-void postTids(Node *this_node) // prints stuff in postorder
-{
-    if(this_node == NULL || this_node->val == 0){return;} // base case
 
-    if(this_node->leftptr != NULL){postTids(this_node->leftptr);}
-    
-    if(this_node->rightptr != NULL){postTids(this_node->rightptr);}
-    std::cout << this_node->val << " ";
 }
-void inTids(Node *this_node) // prints stuf in order
+
+void post(Node *parent) // printing postorder
 {
-    if(this_node == NULL || this_node->val == 0){return;} // base case
-    // std::cout << this_node->val << " ";
-    if(this_node->leftptr != NULL){inTids(this_node->leftptr);}
-    std::cout << this_node->val << " ";
-    if(this_node->rightptr != NULL){inTids(this_node->rightptr);}
+    if(parent == NULL) return;
+    else if(parent != NULL){
+        post(parent->left_child);
+        post(parent->right_child);
+        std::cout << parent->val << " ";
+    }
+
 }
+

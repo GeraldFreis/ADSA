@@ -1,274 +1,327 @@
-#include <iostream>
-#include <vector> // for vector
-#include <string> // for getline functions and string operations
-
 /*
-The Node structure with a link to the parent is how we are going to implement the tree
-*/
-struct Node
+ * @Author       : Hao Zhang
+ * @Date         : 2021-05-06 17:55:21
+ * @LastEditors  : Hao Zhang
+ * @LastEditTime : 2021-05-19 16:24:14
+ * @FilePath     : \assignment2\main.cpp
+ */
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <vector>
+#include <cstring>
+#include <iterator>
+#include <algorithm>
+#include <fstream>
+using namespace std;
+
+class Node
 {
-    Node *left_child = nullptr;
-    Node *right_child = nullptr;
-    Node *parent = nullptr;
-    int val=-2; // by default -2
+private:
+public:
+    Node();
+    Node(int value);
+    Node *parent;
+    Node *parent_right;
+    Node *left;
+    Node *right;
+    int value;
+    int height;
+    ~Node();
 };
 
-
-
-Node *ins(Node *parent, int val); // inserting nodes
-Node *insertBalance(Node *parent, int value);
-Node *deleteBalance(Node *parent, int value);
-Node *dels(Node *parent, int val); // deleting nodes
-Node *leftRot(Node *parent); // left rotating
-Node *rightRot(Node *parent); // right rotating
-void in(Node *parent); // printing inorder
-void pre(Node *parent); // printing preorder
-void post(Node *parent); // printing postorder
-void execute(std::vector<std::string> commandiess); // executing everything
-std::vector<std::string> parser(std::string given_string); // parsing the commands
-
-int main() 
+Node::Node()
 {
-    std::string line;
-    std::getline(std::cin, line); // taking the string as an input because I am cool and don't exist in a lucid dream
-
-    std::vector<std::string> commands = parser(line);
-    execute(commands); // executing
+    value = -1;
+    left = nullptr;
+    right = nullptr;
+    height = 1;
 }
 
-// parses things
-std::vector<std::string> parser(std::string given_string)
+Node::Node(int p_value)
 {
-    std::vector<std::string> commandies;
-    std::string substr;
-    for(int i = 0; i < given_string.size(); i++)
+    value = p_value;
+    left = nullptr;
+    right = nullptr;
+    height = 1;
+}
+
+Node::~Node()
+{
+}
+
+int get_height(Node *N) //to check if node is existing. height = 0 for NULL ptr
+{
+    if (N != NULL)
+        return N->height;
+    return 0;
+}
+//height = 1+ max(left, right)
+void count_height(Node *node)
+{
+    node->height = 1 + max(get_height(node->left), get_height(node->right));
+}
+
+Node *rightRotate(Node *node)
+{
+    Node *left_node;
+    Node *leftRight_node;
+    left_node = node->left;
+    leftRight_node = left_node->right;
+    left_node->right = node;
+    node->left = leftRight_node;
+
+    count_height(node);
+    count_height(left_node);
+
+    return left_node;
+}
+
+Node *leftRotate(Node *node)
+{
+    Node *right_node;
+    Node *rightleft_node;
+    right_node = node->right;
+    rightleft_node = right_node->left;
+    right_node->left = node;
+    node->right = rightleft_node;
+
+    count_height(node);
+    count_height(right_node);
+    return right_node;
+}
+
+//left - right
+int getBalance(Node *N)
+{
+    return get_height(N->left) - get_height(N->right);
+}
+
+Node *addNode(Node *node, int value)
+{
+    //recursion to set node
+    if (node == NULL)
     {
-        
-        if(given_string.at(i) != ' ')
-        {
-            substr += given_string.at(i);
-        } else {
-            commandies.push_back(substr);
-            substr = "";
-        }
+        Node *n = new Node(value);
+        return (n);
     }
-    // there will be one more substring at the end of the line
-    commandies.push_back(substr);
+    if (value < node->value)
+        node->left = addNode(node->left, value);
+    else if (value > node->value)
+        node->right = addNode(node->right, value);
+    else//== node->value
+        return node;
 
-    return commandies;
-}
 
+    count_height(node);
 
-void execute(std::vector<std::string> commandies)
-{
-    // i want to iterate through all little commandies except the last one (but maybe the last one)
-    // We compile with g++11 which means I can use auto
-    Node *headmaster = NULL;
-    for(auto command: commandies)
+    int balance = getBalance(node);
+
+    if (balance > 1)
     {
-        // we can use if statements (I like them more than switches)
-        if(command.at(0) == 'A') // if we need to add to the thingy
+        if (value < node->left->value)
         {
-            headmaster = ins(headmaster, std::stoi(command.substr(1, command.size())));
-        } else if(command.at(0) == 'D') // if we need to delete to the thingy        
-        {
-            headmaster = dels(headmaster, std::stoi(command.substr(1, command.size())));
-        } else if(command == "IN") // printing in order
-        {
-            in(headmaster);
-        } else if(command == "PRE") // printing in pre order
-        {
-            pre(headmaster);
-        } else if(command == "POST") // printing in post order
-        {
-            post(headmaster);
-        }   
-    }
-}
-// here I calculate le balance
-int calcBalance(Node *node){
-    if(node == NULL || node == nullptr){return 0;}
-
-    // finding the heights of the left and right nodes and returning the maximum
-    int leftbal = calcBalance(node->left_child);
-    int rightbal = calcBalance(node->right_child);
-
-    return 1 + std::max(leftbal, rightbal);
-
-}
-
-// balancing with deletes and insert is slightly different so I have different functions because my girlfriend broke up with me on april the 24th of this year and its now april the 27th and our four year anniversary is in two weeks and I have already bought fairly expensive gifts and now I have to return them and I am pretty sad Im not going to lie. I am really struggling right now and I feel like I am drowning. I have so much uni work but I cant really focus. This is my third iteration of code. I have written two previous versions that both worked in my own tests but I think this version might be the winner. To be honest I am not sure if it will be but lets hope. I have spent an awful amount of time on this assignment and my first and second version used int arrays rather than node structures which made rebalancing easy but I think I would lose marks if I used them which is why i have rewritten my code now and its a big effort for me and I am not sure how I am going to cope. Its been two days now and I feel horrendous. Alongside the worst I have ever felt. It was just a punch in the guts because we went to tasmania a week prior for a week and it was really enjoyable. I was really happy. I struggle to be happy but for the past while I have been really happy. But now im sad again. 
-Node *insertBalance(Node *parent, int value){
-    // first we have to calculate the balance 
-    // for that we use a cheeky function
-    int leftbal = calcBalance(parent->left_child)+1;
-    int rightbal = calcBalance(parent->right_child)+1;
-    int bal = leftbal - rightbal;
-
-    if(bal < -1){
-        if(value < parent->right_child->val){ // doing a r-l rotation
-            parent->right_child = rightRot(parent->right_child);
-            return leftRot(parent);
-        } 
-        if(parent->right_child->val < value){
-            return leftRot(parent);
+            return rightRotate(node);
         }
-    } else if(bal > 1){
-        if(parent->left_child->val < value){
-            parent->left_child = leftRot(parent->left_child);
-            return rightRot(parent);
-        } else {
-            return rightRot(parent);
+        if (value > node->left->value)
+        {
+            node->left = leftRotate(node->left);
+            return rightRotate(node);
         }
     }
-    // if it was all balanced we just return the parent
-    return parent;
-}
-
-
-Node *ins(Node *parent, int value) // inserting nodes
-{
-    if(parent == NULL)
+    if (balance < -1)
     {
-        Node *new_node = new Node;
-        new_node->val = value;
-        return new_node;
-    } else {
-        if(value > parent->val){
-            parent->right_child = ins(parent->right_child, value);
-        } else if(value < parent->val){
-            parent->left_child = ins(parent->left_child, value);
-        } else if(value == parent->val) return parent;
-    }
-
-    // now we have to restructure the tree
-    return insertBalance(parent, value);
-}
-
-Node *deleteBalance(Node *parent, int value){
-    int leftbal = calcBalance(parent->left_child)+1;
-    int rightbal = calcBalance(parent->right_child)+1;
-    int bal = leftbal - rightbal;
-
-    if(bal < -1){
-        int rightleft=calcBalance(parent->right_child->left_child), rightright=calcBalance(parent->right_child->right_child);
-        int bal = rightleft - rightright;
-        if(bal > 0){
-            parent->right_child = rightRot(parent->right_child);
-            return leftRot(parent);
-        } 
-        if(bal <= 0){
-            return leftRot(parent);
-        }
-    } 
-    if(bal > 1){
-        int leftleft=calcBalance(parent->left_child->left_child), leftright=calcBalance(parent->left_child->right_child);
-        int bal = leftleft - leftright;
-        if(bal > 0){
-            parent->left_child = leftRot(parent->left_child);
-            return rightRot(parent);
-        } 
-        if(bal <=0){
-            return rightRot(parent);
-        }
-    }
-
-    // if all is balanced
-    return parent;
-}
-
-Node *dels(Node *parent, int val) // deleting nodes
-{
-    // base case
-    if(parent == NULL) return parent;
-
-    // using the same kind of thing that we did for insertion that only difference is if we are in the value or not
-    if(val == parent->val)
-    {
-        if(parent->left_child != NULL && parent->right_child != NULL)
+        if (value > node->right->value)
         {
-            // using a temporary val to store the maximum value on the left side
-            Node *maxleft = parent->left_child;
-            while(maxleft->right_child != NULL){
-                maxleft = maxleft->right_child;
+            return leftRotate(node);
+        }
+        if (value < node->right->value)
+        {
+            node->right = rightRotate(node->right);
+            return leftRotate(node);
+        }
+    }
+    return node;
+}
+// when a top of a node is deleted, we need to reconbine with the max node on the left
+Node *leftMax(Node *node)
+{
+    Node *current = node;
+    while (current->right != NULL)
+        current = current->right;
+
+    return current;
+}
+
+Node *deleteNode(Node *node, int value)
+{
+    if (node == NULL)
+        return node;
+    if (value < node->value)
+    {
+        node->left = deleteNode(node->left, value);
+    }
+    else if (value > node->value)
+    {
+        node->right = deleteNode(node->right, value);
+    }
+    else
+    {
+        //check if have child
+        if (node->left == NULL || node->right == NULL)
+        {
+            if (node->left == NULL && node->right == NULL)//no children
+            {
+                node = NULL;
             }
-
-            parent->val = maxleft->val; // changing the parents value to the max value on the left 
-            // changing the parents left child around because we now have a duplicate so we need to delete some stuff
-            parent->left_child = dels(parent->left_child, maxleft->val);
-
-        } else if(parent->left_child == NULL && parent->right_child != NULL){
-            parent=parent->right_child;
-        } else if(parent->left_child != NULL && parent->right_child == NULL){
-            parent=parent->left_child;
-        } else {
-            parent = NULL;
+            //one child
+            else if (node->left == NULL)
+            {
+                node = node->right;
+            }
+            else
+            {
+                node = node->left;
+            }
         }
-    } else if(parent->val < val){
-        parent->left_child = dels(parent->left_child, val);
-    } else if(parent->val > val){
-        parent->right_child = dels(parent->right_child, val);
+        else// have two children
+        {
+            Node *temp = leftMax(node->left);
+            node->value = temp->value;
+            node->left = deleteNode(node->left, temp->value);
+        }
     }
 
-    // balancing now that we've finished the deleting
-    return deleteBalance(parent, val);
+    count_height(node);
+
+    int balance = getBalance(node);
+
+    if (balance > 1)
+    {
+        if (getBalance(node->left) >= 0)
+        {
+            return rightRotate(node);
+        }
+        if (getBalance(node->left) < 0)
+        {
+            node->left = leftRotate(node->left);
+            return rightRotate(node);
+        }
+    }
+    if (balance < -1)
+    {
+        if (getBalance(node->right) <= 0)
+        {
+            return leftRotate(node);
+        }
+        if (getBalance(node->right) > 0)
+        {
+            node->right = rightRotate(node->right);
+            return leftRotate(node);
+        }
+    }
+
+    return node;
 }
 
-Node *leftRot(Node *parent) // left rotating
+void preOrder(Node *root)//top left right
 {
-    // making the parent the left node of its right child
-    // making the right child the main parent
-    // making the left node of the right child the right child of the parent
-    Node *right = parent->right_child;
-    Node *leftofright = parent->right_child->left_child;
-    right->left_child = parent;
-    parent->right_child = leftofright;
-
-    return right;
-}
-
-Node *rightRot(Node *parent) // right rotating
-{
-    // making the parent the right node of its left child
-    // making the left child the main parent
-    // making the right node of the left child the left child of the parent
-    Node *left = parent->left_child;
-    Node *rightofleft = parent->left_child->right_child;
-    left->right_child = parent;
-    parent->left_child = rightofleft;
-
-    return left;
-}
-
-void in(Node *parent) // printing inorder
-{
-    if(parent == NULL) return;
-    else if(parent != NULL){
-        in(parent->left_child);
-        std::cout << parent->val << " ";
-        in(parent->right_child);
+    if (root != NULL)
+    {
+        cout << root->value << " ";
+        preOrder(root->left);
+        preOrder(root->right);
     }
 }
 
-void pre(Node *parent) // printing preorder
+void inOrder(Node *node)//left top right
 {
-    if(parent == NULL) return;
-    else if(parent != NULL){   
-        std::cout << parent->val << " ";
-        pre(parent->left_child);
-        pre(parent->right_child);
+    if (node != NULL)
+    {
+        inOrder(node->left);
+        cout << node->value << " ";
+        inOrder(node->right);
     }
-
 }
 
-void post(Node *parent) // printing postorder
+void postOrder(Node *node)//left right top
 {
-    if(parent == NULL) return;
-    else if(parent != NULL){
-        post(parent->left_child);
-        post(parent->right_child);
-        std::cout << parent->val << " ";
+    if (node != NULL)
+    {
+        postOrder(node->left);
+        postOrder(node->right);
+        cout << node->value << " ";
     }
-
 }
 
+int main()
+{
+
+    Node *root = NULL;
+    string input;
+    int number;
+    bool flag = true;
+
+    string out_type = " ";
+    while (flag)
+    {
+        cin >> input;
+        if (input[0] == 'P' || input[0] == 'I')
+        {
+            if (input == "PRE")
+            {
+                if (root == NULL)
+                {
+                    cout << "EMPTY";
+                    break;
+                }
+                else
+                {
+                    preOrder(root);
+                    break;
+                }
+                flag = false;
+            }
+            else if (input == "IN")
+            {
+                if (root == NULL)
+                {
+                    cout << "EMPTY";
+                    break;
+                }
+                else
+                {
+                    inOrder(root);
+                    break;
+                }
+                flag = false;
+            }
+            else if (input == "POST")
+            {
+                if (root == NULL)
+                {
+                    cout << "EMPTY";
+                    break;
+                }
+                else
+                {
+                    postOrder(root);
+                    break;
+                }
+                flag = false;
+            }
+        }
+
+        if (input[0] == 'A')
+        {
+            number = stoi(input.substr(1));
+            root = addNode(root, number);
+        }
+        else if (input[0] == 'D')
+        {
+            number = stoi(input.substr(1));
+            root = deleteNode(root, number);
+        }
+    }
+    return 0;
+}
