@@ -76,8 +76,8 @@ int calcBalance(Node *node){
 Node *insertBalance(Node *parent, int value){
     // first we have to calculate the balance 
     // for that we use a cheeky function
-    if(parent == NULL || parent == nullptr) return nullptr;
-
+    if(parent == NULL) return nullptr;
+    if(parent->left_child == NULL || parent->right_child == NULL) return parent;
     int leftbal = calcBalance(parent->left_child)+1;
     int rightbal = calcBalance(parent->right_child)+1;
     int bal = leftbal - rightbal;
@@ -123,8 +123,9 @@ Node *ins(Node *parent, int value) // inserting nodes
 }
 
 Node *deleteBalance(Node *parent, int value){
-    if(parent == NULL || parent == nullptr) return nullptr;
-
+    if(parent == NULL) return nullptr;
+    if(parent->left_child == NULL || parent->right_child == NULL) return parent;
+    
     int leftbal = calcBalance(parent->left_child)+1;
     int rightbal = calcBalance(parent->right_child)+1;
     int bal = leftbal - rightbal;
@@ -195,8 +196,6 @@ Node *dels(Node *parent, int val) // deleting nodes
 
 Node *leftRot(Node *parent) // left rotating
 {
-    if(parent == NULL){return nullptr;}
-    if(parent->right_child == NULL){return parent;}
     // making the parent the left node of its right child
     // making the right child the main parent
     // making the left node of the right child the right child of the parent
@@ -210,8 +209,6 @@ Node *leftRot(Node *parent) // left rotating
 
 Node *rightRot(Node *parent) // right rotating
 {
-    if(parent == NULL){return nullptr;}
-    if(parent->left_child == NULL){return parent;}
     // making the parent the right node of its left child
     // making the left child the main parent
     // making the right node of the left child the left child of the parent
