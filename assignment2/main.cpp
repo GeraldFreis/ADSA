@@ -23,65 +23,42 @@ Node *rightRot(Node *parent); // right rotating
 void in(Node *parent); // printing inorder
 void pre(Node *parent); // printing preorder
 void post(Node *parent); // printing postorder
-void execute(std::vector<std::string> commandiess); // executing everything
-std::vector<std::string> parser(std::string given_string); // parsing the commands
+
 
 int main() 
 {
-    std::string line;
-    std::getline(std::cin, line); // taking the string as an input because I am cool and don't exist in a lucid dream
+    std::string line, current;    
 
-    std::vector<std::string> commands = parser(line);
-    execute(commands); // executing
-}
-
-// parses things
-std::vector<std::string> parser(std::string given_string)
-{
-    std::vector<std::string> commandies;
-    std::string substr;
-    for(int i = 0; i < given_string.size(); i++)
-    {
-        
-        if(given_string.at(i) != ' ')
-        {
-            substr += given_string.at(i);
-        } else {
-            commandies.push_back(substr);
-            substr = "";
-        }
-    }
-    // there will be one more substring at the end of the line
-    commandies.push_back(substr);
-
-    return commandies;
-}
-
-
-void execute(std::vector<std::string> commandies)
-{
-    // i want to iterate through all little commandies except the last one (but maybe the last one)
-    // We compile with g++11 which means I can use auto
+    // std::getline(std::cin, line); // taking the string as an input because I am cool and don't exist in a lucid dream
     Node *headmaster = NULL;
-    for(auto command: commandies)
-    {
-        // we can use if statements (I like them more than switches)
-        if(command.at(0) == 'A') // if we need to add to the thingy
+    while(true){
+        std::cin >> current;
+        if(current.at(0) == 'A') // if we need to add to the thingy
         {
-            headmaster = ins(headmaster, std::stoi(command.substr(1, command.size())));
-        } else if(command.at(0) == 'D') // if we need to delete to the thingy        
+            headmaster = ins(headmaster, std::stoi(current.substr(1, current.size())));
+        } else if(current.at(0) == 'D') // if we need to delete to the thingy        
         {
-            headmaster = dels(headmaster, std::stoi(command.substr(1, command.size())));
-        } else if(command == "IN") // printing in order
+            headmaster = dels(headmaster, std::stoi(current.substr(1, current.size())));
+        } else if(current == "IN") // printing in order
         {
-            in(headmaster);
-        } else if(command == "PRE") // printing in pre order
+            if(headmaster != NULL){
+                in(headmaster);
+            } else {std::cout << "EMPTY\n";}
+            break;
+        } else if(current == "PRE") // printing in pre order
         {
-            pre(headmaster);
-        } else if(command == "POST") // printing in post order
+            if(headmaster != NULL){
+                pre(headmaster);
+            } else {std::cout << "EMPTY\n";}
+            break;
+        } else if(current == "POST") // printing in post order
         {
-            post(headmaster);
+            if(headmaster != NULL){
+                post(headmaster);
+            } else {std::cout << "EMPTY\n";}
+            break;
         }   
+        
     }
 }
 // here I calculate le balance
