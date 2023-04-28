@@ -7,9 +7,9 @@ The Node structure with a link to the parent is how we are going to implement th
 */
 struct Node
 {
-    Node *left_child = nullptr;
-    Node *right_child = nullptr;
-    int val=-2; // by default -2
+    Node *left_child;
+    Node *right_child;
+    int val; // by default -2
 };
 
 
@@ -40,7 +40,7 @@ std::vector<std::string> parser(std::string given_string)
 {
     std::vector<std::string> commandies;
     std::string substr;
-    for(int i = 0; i < given_string.size(); i++)
+    for(int i = 0; i < static_cast<int>(given_string.size()); i++)
     {
         
         if(given_string.at(i) != ' ')
@@ -52,7 +52,9 @@ std::vector<std::string> parser(std::string given_string)
         }
     }
     // there will be one more substring at the end of the line
-    commandies.push_back(substr);
+    if(substr.size() > 1){
+        commandies.push_back(substr);
+    }
 
     return commandies;
 }
@@ -65,29 +67,43 @@ void execute(std::vector<std::string> commandies)
     Node *headmaster = NULL;
     for(auto command: commandies)
     {
-        // we can use if statements (I like them more than switches)
-        if(command.at(0) == 'A') // if we need to add to the thingy
-        {
-            headmaster = ins(headmaster, std::stoi(command.substr(1, command.size())));
-        } else if(command.at(0) == 'D') // if we need to delete to the thingy        
-        {
-            headmaster = dels(headmaster, std::stoi(command.substr(1, command.size())));
-        } else if(command == "IN") // printing in order
-        {
-            in(headmaster);
-        } else if(command == "PRE") // printing in pre order
-        {
-            pre(headmaster);
-        } else if(command == "POST") // printing in post order
-        {
-            post(headmaster);
-        }   
+        if(command.size() >= 2){
+            // we can use if statements (I like them more than switches)
+            if(command.at(0) == 'A') // if we need to add to the thingy
+            {
+                headmaster = ins(headmaster, std::stoi(command.substr(1, command.size())));
+            } else if(command.at(0) == 'D') // if we need to delete to the thingy        
+            {
+                headmaster = dels(headmaster, std::stoi(command.substr(1, command.size())));            
+            } else if(command == "IN") // printing in order
+            {
+                if(headmaster != NULL){
+                    in(headmaster);
+                } else {
+                    std::cout << "EMPTY" << "\n";
+                }
+            } else if(command == "PRE") // printing in pre order
+            {
+                if(headmaster != NULL){
+                    pre(headmaster);
+                } else {
+                    std::cout << "EMPTY" << "\n";
+                }
+            } else if(command == "POST") // printing in post order
+            {
+                if(headmaster != NULL){
+                    post(headmaster);
+                } else {
+                    std::cout << "EMPTY" << "\n";
+                }
+            }   
+        }
     }
 }
 // here I calculate le balance
 int calcBalance(Node *node){
-    if(node == NULL || node == nullptr){return 0;}
-
+    if(node == NULL){return 0;}
+    else if(node->left_child == NULL && node->right_child == NULL){return 1;}
     // finding the heights of the left and right nodes and returning the maximum
     int leftbal = calcBalance(node->left_child);
     int rightbal = calcBalance(node->right_child);
@@ -99,8 +115,6 @@ int calcBalance(Node *node){
 Node *insertBalance(Node *parent, int value){
     // first we have to calculate the balance 
     // for that we use a cheeky function
-    if(parent == NULL) return nullptr;
-
     int leftbal = calcBalance(parent->left_child)+1;
     int rightbal = calcBalance(parent->right_child)+1;
     int bal = leftbal - rightbal;
@@ -146,11 +160,13 @@ Node *ins(Node *parent, int value) // inserting nodes
 }
 
 Node *deleteBalance(Node *parent, int value){
-    if(parent == NULL) return nullptr;
+    // std::cout << "w\n";
+    if(parent == NULL){return nullptr;} // base case / edge case
 
     int leftbal = calcBalance(parent->left_child)+1;
     int rightbal = calcBalance(parent->right_child)+1;
     int bal = leftbal - rightbal;
+    // std::cout << "working\n";
 
     if(bal < -1){
         int rightleft=calcBalance(parent->right_child->left_child), rightright=calcBalance(parent->right_child->right_child);
@@ -183,7 +199,6 @@ Node *dels(Node *parent, int val) // deleting nodes
 {
     // base case
     if(parent == NULL) return nullptr;
-
     // using the same kind of thing that we did for insertion that only difference is if we are in the value or not
     if(val == parent->val)
     {
@@ -197,7 +212,9 @@ Node *dels(Node *parent, int val) // deleting nodes
 
             parent->val = maxleft->val; // changing the parents value to the max value on the left 
             // changing the parents left child around because we now have a duplicate so we need to delete some stuff
-            parent->left_child = dels(parent->left_child, maxleft->val);
+            
+            parent->left_child = dels(parent->left_child, maxleft->val);         
+            // std::cout << "w\n";
 
         } else if(parent->left_child == NULL && parent->right_child != NULL){
             parent=parent->right_child;
@@ -273,3 +290,4 @@ void post(Node *parent) // printing postorder
     }
 
 }
+

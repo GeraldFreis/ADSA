@@ -1,2 +1,5 @@
 main: main.cpp
-	g++ -std=c++11 main.cpp -o main
+	g++ -o main.out -std=c++11 -O2 -Wall main.cpp
+testing: testingmain.cpp
+	g++ -o testingmain -std=c++11 -O2 -Wall testingmain.cpp
+	./testingmain

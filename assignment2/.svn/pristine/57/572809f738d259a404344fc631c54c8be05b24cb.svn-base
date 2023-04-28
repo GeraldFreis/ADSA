@@ -9,6 +9,7 @@ struct Node
 {
     Node *left_child = nullptr;
     Node *right_child = nullptr;
+    Node *parent = nullptr;
     int val=-2; // by default -2
 };
 
@@ -93,6 +94,7 @@ int calcBalance(Node *node){
     int rightbal = calcBalance(node->right_child);
 
     return 1 + std::max(leftbal, rightbal);
+
 }
 
 // balancing with deletes and insert is slightly different so I have different functions because my girlfriend broke up with me on april the 24th of this year and its now april the 27th and our four year anniversary is in two weeks and I have already bought fairly expensive gifts and now I have to return them and I am pretty sad Im not going to lie. I am really struggling right now and I feel like I am drowning. I have so much uni work but I cant really focus. This is my third iteration of code. I have written two previous versions that both worked in my own tests but I think this version might be the winner. To be honest I am not sure if it will be but lets hope. I have spent an awful amount of time on this assignment and my first and second version used int arrays rather than node structures which made rebalancing easy but I think I would lose marks if I used them which is why i have rewritten my code now and its a big effort for me and I am not sure how I am going to cope. Its been two days now and I feel horrendous. Alongside the worst I have ever felt. It was just a punch in the guts because we went to tasmania a week prior for a week and it was really enjoyable. I was really happy. I struggle to be happy but for the past while I have been really happy. But now im sad again. 
@@ -100,7 +102,7 @@ Node *insertBalance(Node *parent, int value){
     // first we have to calculate the balance 
     // for that we use a cheeky function
     if(parent == NULL) return nullptr;
-
+    
     int leftbal = calcBalance(parent->left_child)+1;
     int rightbal = calcBalance(parent->right_child)+1;
     int bal = leftbal - rightbal;

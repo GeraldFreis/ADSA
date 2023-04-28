@@ -7,9 +7,9 @@ The Node structure with a link to the parent is how we are going to implement th
 */
 struct Node
 {
-    Node *left_child = nullptr;
-    Node *right_child = nullptr;
-    int val=-2; // by default -2
+    Node *left_child;
+    Node *right_child;
+    int val; // by default -2
 };
 
 
@@ -28,9 +28,21 @@ std::vector<std::string> parser(std::string given_string); // parsing the comman
 
 int main() 
 {
-    std::string line;
-    std::getline(std::cin, line); // taking the string as an input because I am cool and don't exist in a lucid dream
+    std::string line, current;    
 
+    // std::getline(std::cin, line); // taking the string as an input because I am cool and don't exist in a lucid dream
+    std::cin >> line;
+    while(true){
+        std::cin >> current;
+        if(current != "PRE" && current != "POST" && current != "IN"){
+            line += " ";
+            line += current;
+        } else {
+            line += " "; line += current;
+            break;
+        }
+        
+    }
     std::vector<std::string> commands = parser(line);
     execute(commands); // executing
 }
@@ -38,11 +50,12 @@ int main()
 // parses things
 std::vector<std::string> parser(std::string given_string)
 {
+    
     std::vector<std::string> commandies;
-    std::string substr;
-    for(int i = 0; i < given_string.size(); i++)
+    if(given_string.size() < 2) {return commandies;}
+    std::string substr="";
+    for(int i = 0; i < static_cast<int>(given_string.size()); i++)
     {
-        
         if(given_string.at(i) != ' ')
         {
             substr += given_string.at(i);
@@ -52,7 +65,9 @@ std::vector<std::string> parser(std::string given_string)
         }
     }
     // there will be one more substring at the end of the line
-    commandies.push_back(substr);
+    if(substr.size() > 1){
+        commandies.push_back(substr);
+    }
 
     return commandies;
 }
@@ -62,32 +77,51 @@ void execute(std::vector<std::string> commandies)
 {
     // i want to iterate through all little commandies except the last one (but maybe the last one)
     // We compile with g++11 which means I can use auto
-    Node *headmaster = NULL;
-    for(auto command: commandies)
-    {
-        // we can use if statements (I like them more than switches)
-        if(command.at(0) == 'A') // if we need to add to the thingy
+    Node *headmaster = nullptr;
+    if(commandies.size() <= 1){std::cout << "This is a test\n";}
+    else {
+        for(auto command: commandies)
         {
-            headmaster = ins(headmaster, std::stoi(command.substr(1, command.size())));
-        } else if(command.at(0) == 'D') // if we need to delete to the thingy        
-        {
-            headmaster = dels(headmaster, std::stoi(command.substr(1, command.size())));
-        } else if(command == "IN") // printing in order
-        {
-            in(headmaster);
-        } else if(command == "PRE") // printing in pre order
-        {
-            pre(headmaster);
-        } else if(command == "POST") // printing in post order
-        {
-            post(headmaster);
-        }   
+            if(command.size() >= 2){
+                // we can use if statements (I like them more than switches)
+                if(command.at(0) == 'A') // if we need to add to the thingy
+                {
+                    headmaster = ins(headmaster, std::stoi(command.substr(1, command.size())));
+                    //if(headmaster == nullptr){headmaster=nullptr;}  
+                } else if(command.at(0) == 'D') // if we need to delete to the thingy        
+                {
+                    headmaster = dels(headmaster, std::stoi(command.substr(1, command.size()))); 
+                    //if(headmaster == nullptr){headmaster=NULL;}           
+                } else if(command == "IN") // printing in order
+                {
+                    if(headmaster != nullptr){
+                        in(headmaster);
+                    } else {
+                        std::cout << "EMPTY" << "\n";
+                    }
+                } else if(command == "PRE") // printing in pre order
+                {
+                    if(headmaster != nullptr){
+                        pre(headmaster);
+                    } else {
+                        std::cout << "EMPTY" << "\n";
+                    }
+                } else if(command == "POST") // printing in post order
+                {
+                    if(headmaster != nullptr){
+                        post(headmaster);
+                    } else {
+                        std::cout << "EMPTY" << "\n";
+                    }
+                }   
+            }
+        }
     }
 }
 // here I calculate le balance
 int calcBalance(Node *node){
-    if(node == NULL || node == nullptr){return 0;}
-
+    if(node == nullptr){return 0;}
+    else if(node->left_child == nullptr && node->right_child == nullptr){return 1;}
     // finding the heights of the left and right nodes and returning the maximum
     int leftbal = calcBalance(node->left_child);
     int rightbal = calcBalance(node->right_child);
@@ -99,8 +133,7 @@ int calcBalance(Node *node){
 Node *insertBalance(Node *parent, int value){
     // first we have to calculate the balance 
     // for that we use a cheeky function
-    if(parent == NULL) return nullptr;
-
+    if(parent == nullptr) {return nullptr;}
     int leftbal = calcBalance(parent->left_child)+1;
     int rightbal = calcBalance(parent->right_child)+1;
     int bal = leftbal - rightbal;
@@ -128,7 +161,7 @@ Node *insertBalance(Node *parent, int value){
 
 Node *ins(Node *parent, int value) // inserting nodes
 {
-    if(parent == NULL)
+    if(parent == nullptr)
     {
         Node *new_node = new Node;
         new_node->val = value;
@@ -146,11 +179,13 @@ Node *ins(Node *parent, int value) // inserting nodes
 }
 
 Node *deleteBalance(Node *parent, int value){
-    if(parent == NULL) return nullptr;
+    // std::cout << "w\n";
+    if(parent == NULL){return nullptr;} // base case / edge case
 
     int leftbal = calcBalance(parent->left_child)+1;
     int rightbal = calcBalance(parent->right_child)+1;
     int bal = leftbal - rightbal;
+    // std::cout << "working\n";
 
     if(bal < -1){
         int rightleft=calcBalance(parent->right_child->left_child), rightright=calcBalance(parent->right_child->right_child);
@@ -182,29 +217,30 @@ Node *deleteBalance(Node *parent, int value){
 Node *dels(Node *parent, int val) // deleting nodes
 {
     // base case
-    if(parent == NULL) return nullptr;
-
+    if(parent == nullptr) return nullptr;
     // using the same kind of thing that we did for insertion that only difference is if we are in the value or not
     if(val == parent->val)
     {
-        if(parent->left_child != NULL && parent->right_child != NULL)
+        if(parent->left_child != nullptr && parent->right_child != nullptr)
         {
             // using a temporary val to store the maximum value on the left side
             Node *maxleft = parent->left_child;
-            while(maxleft->right_child != NULL){
+            while(maxleft->right_child != nullptr){
                 maxleft = maxleft->right_child;
             }
 
             parent->val = maxleft->val; // changing the parents value to the max value on the left 
             // changing the parents left child around because we now have a duplicate so we need to delete some stuff
-            parent->left_child = dels(parent->left_child, maxleft->val);
+            
+            parent->left_child = dels(parent->left_child, maxleft->val);         
+            // std::cout << "w\n";
 
-        } else if(parent->left_child == NULL && parent->right_child != NULL){
+        } else if(parent->left_child == nullptr && parent->right_child != nullptr){
             parent=parent->right_child;
-        } else if(parent->left_child != NULL && parent->right_child == NULL){
+        } else if(parent->left_child != nullptr && parent->right_child == nullptr){
             parent=parent->left_child;
         } else {
-            parent = NULL;
+            parent = nullptr;
         }
     } else if(parent->val > val){
         parent->left_child = dels(parent->left_child, val);
@@ -218,6 +254,7 @@ Node *dels(Node *parent, int val) // deleting nodes
 
 Node *leftRot(Node *parent) // left rotating
 {
+    if(parent == nullptr) {return nullptr;}
     // making the parent the left node of its right child
     // making the right child the main parent
     // making the left node of the right child the right child of the parent
@@ -231,6 +268,7 @@ Node *leftRot(Node *parent) // left rotating
 
 Node *rightRot(Node *parent) // right rotating
 {
+    if(parent == nullptr) return nullptr;
     // making the parent the right node of its left child
     // making the left child the main parent
     // making the right node of the left child the left child of the parent
@@ -244,8 +282,8 @@ Node *rightRot(Node *parent) // right rotating
 
 void in(Node *parent) // printing inorder
 {
-    if(parent == NULL) return;
-    else if(parent != NULL){
+    if(parent == nullptr) return;
+    else if(parent != nullptr){
         in(parent->left_child);
         std::cout << parent->val << " ";
         in(parent->right_child);
@@ -254,8 +292,8 @@ void in(Node *parent) // printing inorder
 
 void pre(Node *parent) // printing preorder
 {
-    if(parent == NULL) return;
-    else if(parent != NULL){   
+    if(parent == nullptr) return;
+    else if(parent != nullptr){   
         std::cout << parent->val << " ";
         pre(parent->left_child);
         pre(parent->right_child);
@@ -265,8 +303,8 @@ void pre(Node *parent) // printing preorder
 
 void post(Node *parent) // printing postorder
 {
-    if(parent == NULL) return;
-    else if(parent != NULL){
+    if(parent == nullptr) return;
+    else if(parent != nullptr){
         post(parent->left_child);
         post(parent->right_child);
         std::cout << parent->val << " ";
