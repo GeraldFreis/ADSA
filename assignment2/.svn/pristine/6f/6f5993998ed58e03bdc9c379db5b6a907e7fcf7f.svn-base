@@ -7,9 +7,9 @@ The Node structure with a link to the parent is how we are going to implement th
 */
 struct Node
 {
-    Node *left_child;
-    Node *right_child;
-    int val;
+    Node *left_child = nullptr;
+    Node *right_child = nullptr;
+    int val=-2; // by default -2
 };
 
 
@@ -23,127 +23,44 @@ Node *rightRot(Node *parent); // right rotating
 void in(Node *parent); // printing inorder
 void pre(Node *parent); // printing preorder
 void post(Node *parent); // printing postorder
-void execute(std::vector<std::string> commandiess); // executing everything
-std::vector<std::string> parser(std::string given_string); // parsing the commands
+
 
 int main() 
 {
-    std::string line;
+    std::string line, current;    
+
     // std::getline(std::cin, line); // taking the string as an input because I am cool and don't exist in a lucid dream
-    line="A27 D9 D38 A10 A26 D80 D63 A73 D90 A77 A69 A95 D49 D30 A55 D42 D51 D6 D49 D41 A71 D48 D63 A31 A26 D80 D88 A18 D65 D51 A55 D41 A74 D7 D91 D22 A60 D76 A13 A36 D48 D67 A32 A25 D4 D40 A69 A79 D43 D35 A79 A19 D22 A15 D16 A81 D53 D77 A96 A30 A19 D41 A1 A88 A15 D67 D43 D69 D80 D11 A66 A36 D53 D55 A36 D66 A53 A8 D92 D73 D85 A19 A41 D59 D22 D11 A100 A66 A6 D69 A9 D61 A94 D95 D61 D96 D62 A79 A34 A67 PRE";
-    std::vector<std::string> commands = parser(line);
-    execute(commands); // executing
-    std::cout << "\n";
-    std::cout << "27 13 8 1 6 10 9 18 15 25 19 26 60 32 31 30 41 36 34 53 81 74 67 66 71 79 94 88 100\n\n";
-
-    line="A76 D59 A69 D33 D8 D30 D54 D44 D36 D89 D38 A34 D64 A100 D60 D31 A92 D19 D98 A25 D16 A79 D16 A64 D81 D16 D38 D81 D82 D62 D46 D10 D15 D4 A73 A29 A79 D12 A36 A81 A55 A22 A92 A48 D42 D62 D51 A37 A10 A8 A96 D38 A94 D81 D63 A31 A70 D87 D88 D29 D61 D86 A90 A62 A1 D63 A10 A85 D89 A11 D65 D21 D39 A11 A88 D88 D70 D7 A12 D96 A99 A2 D48 A62 D48 A14 A26 D76 D79 A22 D55 D36 D35 A78 D76 D95 D29 D1 A2 A38 POST";
-    commands = parser(line);
-    
-    execute(commands); // executing
-    std::cout << "\n";
-    std::cout << "8 2 11 14 12 25 31 26 22 10 38 37 64 62 78 73 69 90 94 100 99 92 85 34\n\n";
-
-    line="A3 A22 D86 A67 A86 D66 D6 D51 D44 A63 D11 A75 A76 D89 D99 A36 A62 D90 D47 D90 A71 A7 D30 D63 D64 D57 A22 A46 D50 A14 D25 A41 A87 D25 D39 D40 A9 A38 A17 A100 A65 D94 D14 A98 D76 A45 A59 D8 A99 D97 D68 D7 A43 D33 D25 A26 D9 A68 D25 D9 A10 D25 A80 D44 D66 A60 D89 A45 D16 A85 A47 A63 A61 D98 D72 A95 D87 A39 A20 D22 A13 D22 A36 D36 D24 D36 A12 D27 A31 D75 A57 D39 D42 D26 D13 A41 A68 A8 D19 A61 POST";
-    commands = parser(line);
-    
-    execute(commands); // executing
-    std::cout << "\n";
-    std::cout << "8 3 12 10 31 20 41 45 43 38 17 57 47 61 60 59 63 65 68 67 62 80 85 95 100 99 86 71 46\n\n";
-
-    line="A40 A96 D52 A43 A65 A84 A25 A36 D42 A29 A86 A2 A4 D78 D33 D82 A40 A84 D41 D94 A79 D54 A8 A12 A46 D41 D29 A83 D49 A92 D93 D10 D3 D44 A45 A83 A39 A77 A13 A1 A46 A68 A9 D83 A76 D57 D55 D69 D78 D12 A75 A63 D75 D30 A3 D94 D5 A11 D90 A35 A22 A11 D58 A68 D75 A56 D94 D4 D59 A26 A27 A17 D71 D52 D40 D94 D83 D68 D92 A47 D24 D66 D98 D10 A77 A28 D27 D28 D68 D59 D35 A34 A99 A62 D90 D65 D31 A81 A76 A89 POST";
-    commands = parser(line);
-    
-    execute(commands); // executing
-    std::cout << "\n";
-    std::cout << "1 2 8 3 11 17 22 13 34 26 39 36 25 9 45 47 46 62 56 77 76 81 84 89 99 96 86 79 63 43\n\n";
-
-    line="D16 D13 A40 A61 A61 D1 A27 A60 A46 D11 D94 A86 D5 D72 D85 A20 D36 A20 A1 D80 A40 A15 A38 D75 A10 A5 D13 D38 A23 D21 D26 A73 A51 A41 A67 D71 D42 A70 A24 A24 D78 A46 D77 D48 A40 D69 D76 D9 D39 D21 D28 D1 D15 D7 D14 D54 D58 A39 A65 A71 D96 A7 D30 A24 D48 D15 D60 A94 A9 D82 D39 D65 A82 D94 D4 A51 D48 A95 D99 D57 D60 D78 A14 D45 A63 D53 D9 D7 D65 D15 A59 D99 D83 A44 D37 D2 A35 D69 A74 D49 PRE";
-    commands = parser(line);
-    
-    execute(commands); // executing
-    std::cout << "\n";
-    std::cout << "40 20 10 5 14 24 23 27 35 67 51 44 41 46 61 59 63 73 70 71 86 82 74 95\n\n";
-
-    line="D94 D55 D35 A88 D29 D64 A68 A34 D40 D54 D71 D82 A91 D85 A73 A96 A77 A82 D79 A16 A28 A96 D83 A78 A55 A31 D1 D37 D18 A45 A90 A8 A94 A62 A84 A45 A23 A73 A65 D88 A44 A10 D51 D84 D82 D8 A26 D10 A45 D8 D40 A98 A27 D99 A66 A25 D11 D98 D21 D8 D69 D57 D27 D11 A70 A44 D20 A17 A99 D28 A42 A34 A13 D3 D79 D52 A8 A22 D39 D41 A44 D14 A44 A62 A82 A32 D15 D62 A34 D56 D76 A74 A14 A32 A14 A43 A63 A41 A56 D40 PRE";
-    commands = parser(line);
-    
-    execute(commands); // executing
-    std::cout << "\n";
-    std::cout << "55 26 16 13 8 14 23 17 22 25 34 31 32 44 42 41 43 45 77 68 65 63 56 66 73 70 74 91 82 78 90 96 94 99\n\n";
-
-    line="A14 D8 A49 A45 D95 A30 D12 D56 A37 D76 D29 A100 A6 D85 A40 A62 D79 A33 A6 A90 D41 A61 A42 A81 A77 A39 A89 D87 D42 D3 D11 D91 D77 D68 A27 A13 D94 A44 A8 D22 A84 D36 D35 A17 A56 D24 A98 A33 A67 A2 A85 D15 A7 A100 D20 D33 D71 A23 A77 D1 D63 A20 D62 A52 A65 A53 A26 D40 D1 A25 D81 A1 D35 D8 D78 A82 A37 A97 D88 D29 D2 D82 D87 D24 D89 A69 A45 D58 A11 A3 D41 A14 D61 A92 D22 D39 D82 D53 A11 A21 POST";
-    commands = parser(line);
-    
-    execute(commands); // executing
-    std::cout << "\n";
-    std::cout << "3 1 7 13 11 6 17 21 20 25 27 26 23 44 37 30 14 49 52 65 69 77 67 56 85 92 90 100 98 97 84 45\n\n";
-
-    line="A74 A36 D26 D59 D12 D88 A84 A67 D13 D24 A95 A80 A11 A21 A13 D92 A80 A23 D27 A10 D50 D25 D35 D52 A37 D93 A17 A23 A72 A67 D71 D33 A96 A100 D88 A23 D14 D12 D97 A17 A10 A95 D80 D43 A99 D6 A86 A89 D34 A66 A19 A73 D65 A56 A99 D12 D52 D100 A2 D19 A57 A32 D4 A76 D34 D21 D99 A95 D20 D67 D87 D33 D25 A95 A53 A19 A60 D99 A23 D95 D81 D79 A93 A13 A89 D87 A82 A2 A6 D31 D87 D13 A85 A99 D13 D88 D98 A48 D83 D57 POST";
-    commands = parser(line);
-    
-    execute(commands); // executing
-    std::cout << "\n";
-    std::cout << "2 10 6 19 17 32 23 11 37 53 48 60 56 36 73 72 76 74 85 84 89 99 96 93 86 82 66\n\n";
-
-    // line="D37 D15 A40 D59 A21 D32 A41 D97 D77 A69 D43 A19 A88 A15 D4 D99 A76 A15 D83 A87 A55 A1 A5 A84 D86 D71 A57 D98 D94 A97 D93 D10 D20 A14 D11 D83 D24 A61 D64 D90 D77 D32 A17 D53 D63 A10 A53 D67 D89 A36 A68 D45 A22 A97 D84 A59 A74 A27 A32 D82 D19 D58 D23 A15 D69 D54 D15 D9 D38 A67 D62 D22 D68 D49 D97 A22 A2 D44 D9 A64 D23 D18 A83 A16 D99 D55 A64 D78 A66 D46 D49 A87 D63 D50 D56 A4 A96 D48 A24 A25 PRE";
-    // commands= parser(line);
-    // execute(commands);
-    // std::cout << "\n40 14 5 2 1 4 10 27 21 17 16 24 22 25 32 36 67 59 53 41 57 64 61 66 87 76 74 83 88 96\n\n";
-}
-
-// parses things
-std::vector<std::string> parser(std::string given_string)
-{
-    std::vector<std::string> commandies;
-    std::string substr;
-    for(int i = 0; i < given_string.size(); i++)
-    {
-        
-        if(given_string.at(i) != ' ')
-        {
-            substr += given_string.at(i);
-        } else {
-            commandies.push_back(substr);
-            substr = "";
-        }
-    }
-    // there will be one more substring at the end of the line
-    commandies.push_back(substr);
-
-    return commandies;
-}
-
-
-void execute(std::vector<std::string> commandies)
-{
-    // i want to iterate through all little commandies except the last one (but maybe the last one)
-    // We compile with g++11 which means I can use auto
     Node *headmaster = NULL;
-    for(auto command: commandies)
-    {
-        std::cout << command << "\n";
-        post(headmaster);
-        std::cout << "\n\n";
-        // we can use if statements (I like them more than switches)
-        if(command.at(0) == 'A') // if we need to add to the thingy
+    while(true){
+        std::cin >> current;
+        if(current.at(0) == 'A') // if we need to add to the thingy
         {
-            headmaster = ins(headmaster, std::stoi(command.substr(1, command.size())));
-        } else if(command.at(0) == 'D') // if we need to delete to the thingy        
+            headmaster = ins(headmaster, std::stoi(current.substr(1, current.size())));
+        } else if(current.at(0) == 'D') // if we need to delete to the thingy        
         {
-            headmaster = dels(headmaster, std::stoi(command.substr(1, command.size())));
-        } else if(command == "IN") // printing in order
+            headmaster = dels(headmaster, std::stoi(current.substr(1, current.size())));
+        } else if(current == "IN") // printing in order
         {
-            in(headmaster);
-        } else if(command == "PRE") // printing in pre order
+            if(headmaster != NULL){
+                in(headmaster);
+            } else {std::cout << "EMPTY\n";}
+            break;
+        } else if(current == "PRE") // printing in pre order
         {
-            pre(headmaster);
-        } else if(command == "POST") // printing in post order
+            if(headmaster != NULL){
+                pre(headmaster);
+            } else {std::cout << "EMPTY\n";}
+            break;
+        } else if(current == "POST") // printing in post order
         {
-            post(headmaster);
+            if(headmaster != NULL){
+                post(headmaster);
+            } else {std::cout << "EMPTY\n";}
+            break;
         }   
+        
     }
 }
-// here I calculate le balance
 int calcBalance(Node *node){
     if(node == NULL || node == nullptr){return 0;}
 
@@ -207,14 +124,13 @@ Node *ins(Node *parent, int value) // inserting nodes
 Node *deleteBalance(Node *parent, int value){
     if(parent == NULL || parent == nullptr) return nullptr;
 
-    int leftbal = calcBalance(parent->left_child);
-    int rightbal = calcBalance(parent->right_child);
+    int leftbal = calcBalance(parent->left_child)+1;
+    int rightbal = calcBalance(parent->right_child)+1;
     int bal = leftbal - rightbal;
 
     if(bal < -1){
         int rightleft=calcBalance(parent->right_child->left_child), rightright=calcBalance(parent->right_child->right_child);
-        bal = rightleft - rightright;
-        // std::cout << bal << " " << parent->val << "\n";
+        int bal = rightleft - rightright;
         if(bal > 0){
             parent->right_child = rightRot(parent->right_child);
             return leftRot(parent);
@@ -225,12 +141,12 @@ Node *deleteBalance(Node *parent, int value){
     } 
     else if(bal >= 2){
         int leftleft=calcBalance(parent->left_child->left_child), leftright=calcBalance(parent->left_child->right_child);
-        bal = leftleft - leftright;
-        if(bal > 2){
+        int bal = leftleft - leftright;
+        if(bal > 1){
             parent->left_child = leftRot(parent->left_child);
             return rightRot(parent);
         } 
-        else if(bal <= 1){
+        else if(bal <=0){
             return rightRot(parent);
         }
     }
