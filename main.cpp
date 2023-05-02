@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 
 struct Pair {
     char key;
@@ -58,21 +59,40 @@ void Table::printTable(){
     }
 }
 
-int main(){ // doing everything at the same time as we receive the input
-    std::string command="";
-    Table tab;
-    while(command != "\n" && command != "\0"){
-        // for each command we just do what we want
-        std::cin >> command;
-        if(command.size() < 2) {return;} // base case
-
-        if(command.at(0) == 'A'){ // if we have an addition
-            tab.Insert(command.substr(1, command.size()));
+std::vector<std::string> parser(std::string given_string)
+{
+    
+    std::vector<std::string> commandies;
+    if(given_string.size() < 2) {return commandies;}
+    std::string substr="";
+    for(int i = 0; i < static_cast<int>(given_string.size()); i++)
+    {
+        if(given_string.at(i) != ' ')
+        {
+            substr += given_string.at(i);
+        } else {
+            commandies.push_back(substr);
+            substr = "";
         }
-        else if(command.at(0) == 'D'){ // if we have a deletion from the table
-            tab.Delete(command.substr(1, command.size()));
-        }
-
+    }
+    // there will be one more substring at the end of the line
+    if(substr.size() > 1){
+        commandies.push_back(substr);
     }
 
+    return commandies;
+}
+
+int main(){ // doing everything at the same time as we receive the input
+    std::string commands;
+    Table tab;
+    std::getline(std::cin, commands);
+    for(auto command: parser(commands)){ // for each command
+        if(command.at(0) == 'A'){
+            tab.Insert(command.substr(1, command.size()));
+        } else if(command.at(0) == 'D'){
+            tab.Delete(command.substr(1, command.size()));
+        }
+    }
+    tab.printTable();
 }
