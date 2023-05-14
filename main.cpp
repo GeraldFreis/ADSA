@@ -32,16 +32,29 @@ Table::Table()
 Table::~Table(){delete [] entries;}
 
 int Table::findIndex(std::string val){
-    // i know index will be at val.end - 'a' // because I'm smart
-    return int(val.at(val.size()-1)- 'a');
+    int corresponding_index = int(val.at(val.size()-1)- 'a');
+    if(this->entries[corresponding_index].value == val){return corresponding_index;}
+    // we know that we are going to need to wrap around
+    int current_index = corresponding_index+1;
+    while(current_index < 26){
+        if(this->entries[current_index].value == val){return current_index;}
+        current_index++;
+    }
+    // going back through the top of the list
+    for(int i = 0; i < corresponding_index; i++){
+        if(this->entries[i].value == val){return i;}
+    }
+    return -1; // was not found
 }
 
 void Table::Insert(std::string val){
     int corresponding_index = findIndex(val);
+    if(corresponding_index == -1)
     if(entries[corresponding_index].value == "Never Used"){ // if the index is never used
         entries[corresponding_index].value = val;
     }
 }
+
 void Table::Delete(std::string val){
     int corresponding_index = findIndex(val);
     if(entries[corresponding_index].value != "Never Used"){ // if the index is never used
@@ -61,7 +74,6 @@ void Table::printTable(){
 
 std::vector<std::string> parser(std::string given_string)
 {
-    
     std::vector<std::string> commandies;
     if(given_string.size() < 2) {return commandies;}
     std::string substr="";
