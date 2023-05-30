@@ -14,6 +14,7 @@ class Table {
         Pair *entries;
         int index_counter;
         int findIndex(std::string val);
+        int nextOpen(int val);
     public:
         Table();
         ~Table();
@@ -21,6 +22,7 @@ class Table {
         void Insert(std::string val);
         void Delete(std::string val);
         void printTable();
+
 };
 
 
@@ -77,7 +79,7 @@ int Table::findIndex(std::string val)
 {
     // so what we do is we take the last value as a key
     int value_index = int(val.at(val.size()-1) - 'a');
-    std::cout << value_index << "\n";
+    // std::cout << value_index << "\n";
     // check that there exists a val in here
     if(this->entries[value_index].value == "Never Used") return -1; // we signify that nothing exists in the current spot by returning -1
 
@@ -94,17 +96,24 @@ int Table::findIndex(std::string val)
         if(this->entries[i].value == val) return i;
     }
     return -1;
+}
 
+/*Formal Parameters: int index, returns the next available slot or -1 if table is full*/
+int Table::nextOpen(int index){
+    for(int i = index; i < 26; i++){
+        if(this->entries[i].value == "Never Used"){return i;}
+    }
+    for(int i = 0; i < index; i++){
+        if(this->entries[i].value == "Never Used"){return i;}
+    }
+    return -1; // if everything is occupied we will return -1
 }
 
 void Table::Insert(std::string val)
 {
-    // std::cout << val << "\n";
     int index = findIndex(val);
-    std::cout << val << ": " << index << "\n";
     if(index != -1) return;
-    index = this->index_counter;
-    // std::cout << index << "\n";
+    index = nextOpen(int(val.at(val.size()-1) - 'a'));
     this->entries[index].key = val.back();
     this->entries[index].value = val;
 
@@ -116,17 +125,18 @@ void Table::Delete(std::string val)
     // for deletions we restructure
     int index = findIndex(val);
     if(index == -1) return; // returning if value is not found
-    this->entries[index].value = "TombStone";
+    this->entries[index].value = "Never Used";
     
 }
 
 void Table::printTable()
 {
+    int counter = 0;
     for(int i = 0; i < 26; i++){
         if(this->entries[i].value != "Never Used" && this->entries[i].value != "TombStone"){
 
-            if(i == 0){
-                std::cout << this->entries[i].value;
+            if(counter == 0){
+                std::cout << this->entries[i].value; counter++;
             } else {
                 std::cout << " " << this->entries[i].value;
             }
