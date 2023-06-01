@@ -19,8 +19,6 @@ We need, after reconstruction, exactly one path between each city pairs
 -> can not have multiple paths between cities (can we just create a ring route?)
 --> Ring route will not be an optimal solution
 We need to find the minimal cost for reconstruction (minimal cost to ensure that there is exactly one path between city pairs)
-
-
 */
 
 int main()
@@ -41,6 +39,7 @@ int main()
 	std::cout <<'\n';
 	printarray(destroy_road_matrix);
 	std::cout <<'\n';
+	// std::cout << '3';
 
 }
 // function to count how many columns we are going to need (and then also the row amount because it is a n*n matrix)
