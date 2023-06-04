@@ -1,18 +1,17 @@
 #include 	<iostream>
-#include 	<cstring>
 #include 	<string>
-#include 	<vector>
+#include 	<algorithm> // this is for the sorting
 
-
-static int col_counter;
+static int col_counter; // counts how many cities we have
 void column_counter(std::string given_line);
-int **existing_road_matrix_maker(std::string line);
-int **building_road_matrix_maker(std::string line);
-int **destroy_road_matrix_maker(std::string line);
-void printarray(int **arr);
+int **existing_road_matrix_maker(std::string line); // matrix making function for the existing roads
+int **building_road_matrix_maker(std::string line); // matrix making function for the cost to build roads
+int **destroy_road_matrix_maker(std::string line); // matrix making function for the cost to destroy roads
+void printarray(int **arr); // prints the integer matrix
 
-int alltraversals(int **existing_array, int **building_array, int **destroy_array); // this function gives us the min cost
+int min_cost(int **existing_array, int **building_array, int **destroy_array); // this function gives us the min cost
 bool onepath(int **existing_array); // this function checks if only one path exists between every pair of cities
+
 /*
 Constraints for the assignment:
 We need, after reconstruction, exactly one path between each city pairs
@@ -33,13 +32,7 @@ int main()
 	int **building_road_matrix = building_road_matrix_maker(line);
 	int **destroy_road_matrix = destroy_road_matrix_maker(line);
 
-	// reading in works woo
-	// printarray(existing_road_matrix);
-	// std::cout <<'\n';
-	// printarray(building_road_matrix);
-	// std::cout <<'\n';
-	// printarray(destroy_road_matrix);
-	// std::cout <<'\n';
+
 	if(col_counter == 1){std::cout << "0\n";} //  we know that if there is only one element that we do not need any roads and hence there will not be any cost associated
 	else {
 		if(onepath(existing_road_matrix) != true){
@@ -163,7 +156,7 @@ void printarray(int **arr){
 }
 
 
-int alltraversals(int **existing_array, int **building_array, int **destroy_array)
+int min_cost(int **existing_array, int **building_array, int **destroy_array)
 {
 	int n = col_counter;
 
